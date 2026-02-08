@@ -3,6 +3,7 @@
 <head>
   <link rel="shortcut icon" href="ChatGPT Image 3 de fev. de 2026, 20_51_33.png" type="image/x-icon">
 <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>AN RNG SITE</title>
 
 <style>
@@ -78,23 +79,44 @@ body{
 
 @media (max-width: 900px){
   body{
-    overflow:hidden;
+    overflow:auto;              /* deixa rolar no celular */
+    align-items:flex-start;
+    padding:10px;
   }
 
   #app{
     width:100%;
-    height:100svh;
-    grid-template-columns:1fr;
-    overflow-y:auto;
-    border-radius:0;
+    height:auto;                /* não força 100svh cortando conteúdo */
+    min-height:100svh;
+    grid-template-columns:1fr;  /* 1 coluna */
+    grid-template-rows:auto auto auto;
+    overflow:visible;           /* evita scroll “preso” dentro do app */
+    border-radius:12px;
   }
 
-  #left,
-  #right{
-    border:none;
-    padding:15px;
+  #left{ border-right:none; border-bottom:1px solid var(--border); }
+  #right{ border-left:none; border-top:1px solid var(--border); }
+
+  /* Lista de auras com scroll próprio (pra não ficar gigante) */
+  #rollingAuras{
+    height:auto;
+    max-height:45svh;
+    overflow-y:auto;
+  }
+
+  /* Effects list: não deixa “travar” */
+  .effectBox{
+    max-height:none;
+    overflow:visible;
+  }
+
+  /* Overlays (Storage / Log / Potions) ficarem confortáveis no celular */
+  .overlayPanel{
+    width:92vw;
+    max-height:82svh;
   }
 }
+
 
 
 
