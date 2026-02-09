@@ -1637,6 +1637,15 @@ body{
   <div id="introMessage">This game is heavily inspired by Sols rng in Roblox.</div>
 </div>
 
+<!-- Name prompt overlay -->
+<div id="nameOverlay" style="display:none;">
+  <div class="nameBox">
+    <div class="nameTitle">What's your name?</div>
+    <input id="playerNameInput" maxlength="16" placeholder="Your name"/>
+    <button onclick="confirmPlayerName()">Confirm</button>
+  </div>
+</div>
+
 <div id="app">
   <div id="biomeFX"></div>
   <div id="whiteFlash"></div>
@@ -4334,6 +4343,26 @@ updateCurrentLuckUI(bonusArmed ? 1.5 : 1);
 
 startBiomeSchedulers();
 setInterval(saveGame, 8000);
+
+
+// =========================
+// PLAYER NAME
+// =========================
+let playerName = localStorage.getItem("an_rng_player_name") || "";
+
+function askPlayerName(){
+  if(!playerName){
+    document.getElementById("nameOverlay").style.display = "flex";
+  }
+}
+
+function confirmPlayerName(){
+  const v = document.getElementById("playerNameInput").value.trim();
+  if(!v) return;
+  playerName = v;
+  localStorage.setItem("an_rng_player_name", playerName);
+  document.getElementById("nameOverlay").style.display = "none";
+}
 
 /* start intro last */
 runIntro();
