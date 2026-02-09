@@ -127,6 +127,60 @@ body{
 #right{border-left:1px solid var(--border);}
 
 /* ===== INTRO OVERLAY ===== */
+/* ===== NAME OVERLAY ===== */
+#nameOverlay{
+  position:fixed; inset:0;
+  background:rgba(0,0,0,0.92);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:5200;
+}
+#nameOverlay.show{ display:flex; }
+#namePanel{
+  width:520px; max-width:92vw;
+  border:1px solid var(--border);
+  border-radius:18px;
+  background:rgba(9,9,9,0.95);
+  padding:18px 16px;
+  box-shadow:0 0 40px rgba(0,0,0,0.7);
+  text-align:center;
+}
+#nameTitle{
+  font-size:18px;
+  letter-spacing:1px;
+  margin-bottom:10px;
+  opacity:0.95;
+}
+#namePrompt{
+  font-size:14px;
+  letter-spacing:0.6px;
+  margin-bottom:10px;
+  color:#eaeaea;
+  opacity:0.9;
+}
+#nameInput{
+  width:100%;
+  padding:10px 12px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,0.25);
+  background:rgba(0,0,0,0.45);
+  color:#fff;
+  outline:none;
+  font-size:14px;
+}
+#nameInput:focus{ border-color: rgba(255,255,255,0.7); }
+#nameOk{
+  margin-top:12px;
+  width:100%;
+  padding:9px 12px;
+  border-radius:14px;
+  border:1px solid #fff;
+  background:none;
+  color:#fff;
+  cursor:pointer;
+}
+
 #introOverlay{
   position:fixed; inset:0;
   background:#000;
@@ -1627,6 +1681,71 @@ body{
   opacity:0.45;
   cursor:not-allowed;
 }
+
+/* =========================
+   RANKING UI
+========================= */
+#rankingPanel h2{margin:0 0 10px 0;font-size:18px;letter-spacing:1px;}
+.rankingMeta{
+  font-size:12px;
+  color:#cfcfcf;
+  line-height:1.35;
+  margin-bottom:10px;
+}
+#rankingList{
+  border:1px solid var(--border);
+  border-radius:14px;
+  overflow:hidden;
+}
+.rankRow{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:10px 12px;
+  border-bottom:1px solid var(--border);
+  background:rgba(0,0,0,0.25);
+}
+.rankRow:last-child{border-bottom:none;}
+.rankLeft{display:flex;align-items:center;gap:10px;min-width:0;}
+.rankPos{
+  width:26px;height:26px;border-radius:8px;
+  border:1px solid rgba(255,255,255,0.35);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;opacity:0.9;
+}
+.rankName{
+  font-size:13px;
+  font-weight:700;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.rankRolls{
+  font-size:12px;
+  color:#eaeaea;
+  opacity:0.95;
+}
+.rankActions{
+  display:flex;
+  gap:8px;
+  margin-top:12px;
+}
+.rankActions button{
+  border-radius:12px;
+  border:1px solid white;
+  background:none;
+  color:white;
+  cursor:pointer;
+  padding:7px 10px;
+}
+.rankNote{
+  margin-top:10px;
+  font-size:12px;
+  color:#cfcfcf;
+  opacity:0.9;
+}
+
 </style>
 </head>
 
@@ -1634,17 +1753,32 @@ body{
 
 <!-- Intro -->
 <div id="introOverlay" aria-hidden="false">
-  <div id="introMessage">This game is heavily inspired by Sols rng in Roblox.</div>
-</div>
+  <div>
+    <div id="introMessage"></div>
 
-<!-- Name prompt overlay -->
-<div id="nameOverlay" style="display:none;">
-  <div class="nameBox">
-    <div class="nameTitle">What's your name?</div>
-    <input id="playerNameInput" maxlength="16" placeholder="Your name"/>
-    <button onclick="confirmPlayerName()">Confirm</button>
+    <div id="introName" style="display:none; margin-top:14px; text-align:center;">
+      <div style="margin-bottom:6px;">What's your name?</div>
+      <input id="playerNameInput" maxlength="16" />
+      <button id="playerNameBtn">OK</button>
+    </div>
   </div>
 </div>
+
+
+
+<!-- Name prompt (first time) -->
+<div id="nameOverlay" aria-hidden="true">
+  <div id="namePanel">
+    <div id="nameTitle">A Shit Experiences Game</div>
+    <div id="namePrompt">Whats your name?</div>
+    <input id="nameInput" type="text" maxlength="24" placeholder="Type your name..." autocomplete="nickname" />
+    <button id="nameOk">OK</button>
+    <div style="margin-top:8px;font-size:12px;color:#cfcfcf;opacity:.85;line-height:1.35;">
+      This name is saved only on your device (localStorage) and will appear in Ranking.
+    </div>
+  </div>
+</div>
+
 
 <div id="app">
   <div id="biomeFX"></div>
@@ -1770,7 +1904,26 @@ body{
   </div>
 </div>
 
-  <!-- UPDATE LOG OVERLAY -->
+  
+  <!-- RANKING OVERLAY -->
+  <div id="rankingOverlay" class="overlay" aria-hidden="true">
+    <button class="overlayClose" id="rankingClose" title="Close" aria-label="Close">X</button>
+    <div class="overlayPanel" id="rankingPanel">
+      <h2>RANKING</h2>
+      <div class="rankingMeta" id="rankingMeta"></div>
+      <div id="rankingList"></div>
+      <div class="rankActions">
+        <button onclick="setPlayerName()">Set Name</button>
+        <button onclick="closeRanking()">Close</button>
+      </div>
+      <div class="rankNote">
+        Note: browsers don't allow websites to read your Google/Windows/Gmail profile name automatically.
+        This ranking uses a name saved on this device.
+      </div>
+    </div>
+  </div>
+
+<!-- UPDATE LOG OVERLAY -->
   <div id="logOverlay" class="overlay" aria-hidden="true">
     <button class="overlayClose" id="logClose" title="Close" aria-label="Close">X</button>
     <div class="overlayPanel" id="logPanel">
@@ -1866,6 +2019,9 @@ function sfx(type="click"){
    Persistence
 ========================= */
 const SAVE_KEY = "an_rng_site_save_v10_desert_rain_newauras";
+const PLAYER_NAME_KEY = "an_rng_site_player_name_v1";
+const RANK_KEY = "an_rng_site_ranking_local_v1";
+let playerName = "";
 function saveGame(){
   try{
     const data = {
@@ -1907,12 +2063,15 @@ function saveGame(){
       dailyExplored
     };
 
+    updateLeaderboard();
     localStorage.setItem(SAVE_KEY, JSON.stringify(data));
   }catch(e){}
 }
 
 function loadGame(){
   try{
+    playerName = localStorage.getItem(PLAYER_NAME_KEY) || "";
+
     const raw = localStorage.getItem(SAVE_KEY);
     if(!raw) return;
 
@@ -1947,6 +2106,11 @@ function loadGame(){
 
     bonusCounter = data.bonusCounter ?? bonusCounter;
     bonusArmed = data.bonusArmed ?? bonusArmed;
+
+    // player name
+    playerName = (data.playerName ?? playerName) || "";
+    if(playerName) localStorage.setItem(PLAYER_NAME_KEY, playerName);
+
 
     // MISSIONS (daily)
     if(data.missionsState) missionsState = data.missionsState;
@@ -2812,14 +2976,28 @@ function addToCraft(effect){
   const eNeed = needs[effect];
   if(!eNeed) return;
 
+  // Special: some recipes require crafted EFFECTS (not auras in storage)
+  if(effect === "Eclipse"){
+    // Sunshine + FullMoon are effects; mark progress if already crafted.
+    craftProgress.Eclipse.Sunshine = crafted.Sunshine ? 1 : 0;
+    craftProgress.Eclipse.FullMoon  = crafted.FullMoon ? 1 : 0;
+  }
+
   if(effect === "GalaxySpace" && eNeed.CometBlessing){
     if(crafted.CometBlessing){
       craftProgress.GalaxySpace.CometBlessing = 1;
     }
   }
 
+  if(effect === "Eclipse" && eNeed.Sunshine && eNeed.FullMoon){
+    // Sunshine / FullMoon are EFFECTS (not auras). If already crafted, count them.
+    craftProgress.Eclipse.Sunshine = crafted.Sunshine ? 1 : 0;
+    craftProgress.Eclipse.FullMoon = crafted.FullMoon ? 1 : 0;
+  }
+
   for(const aura in eNeed){
     if(aura === "CometBlessing") continue;
+    if(effect === "Eclipse" && (aura === "Sunshine" || aura === "FullMoon")) continue;
 
     let required = eNeed[aura] - (craftProgress[effect]?.[aura] ?? 0);
     let inStorage = storage.filter(x=>x.name===aura).length;
@@ -2865,6 +3043,8 @@ function renderEffects(){
  box.innerHTML=`
   <button class="buyStorageBtn" onclick="openLog()">Update Log</button>
   <button class="buyStorageBtn" onclick="openMissions()">Missions</button>
+    <button class="buyStorageBtn" onclick="openRanking()">Ranking</button>
+<button class="buyStorageBtn" onclick="openRanking()">Ranking</button>
   <button class="buyStorageBtn" onclick="openStorage()">Storage</button>
   <button class="buyStorageBtn" onclick="openPotions()">Open Potions Craft</button>
 `;
@@ -3260,6 +3440,113 @@ setInterval(()=>{
 /* =========================
    Overlays
 ========================= */
+
+/* =========================
+   Player Name + Ranking (local)
+========================= */
+function ensurePlayerName(){
+  // already have a name
+  playerName = (localStorage.getItem(PLAYER_NAME_KEY) || playerName || "").trim();
+  if(playerName){
+    localStorage.setItem(PLAYER_NAME_KEY, playerName);
+    updateLeaderboard();
+    return;
+  }
+
+  const ov = document.getElementById("nameOverlay");
+  const input = document.getElementById("nameInput");
+  const ok = document.getElementById("nameOk");
+  if(!ov || !input || !ok) return;
+
+  ov.classList.add("show");
+  ov.setAttribute("aria-hidden","false");
+
+  const submit = ()=>{
+    const v = (input.value || "").trim();
+    playerName = v.length ? v.slice(0,24) : "Player";
+    localStorage.setItem(PLAYER_NAME_KEY, playerName);
+    ov.classList.remove("show");
+    ov.setAttribute("aria-hidden","true");
+    updateLeaderboard();
+    saveGame();
+  };
+
+  ok.onclick = submit;
+  input.onkeydown = (e)=>{ if(e.key === "Enter") submit(); };
+
+  setTimeout(()=>{ input.focus(); }, 60);
+}
+
+function getRanking(){
+  try{
+    const raw = localStorage.getItem(RANK_KEY);
+    const arr = raw ? JSON.parse(raw) : [];
+    return Array.isArray(arr) ? arr : [];
+  }catch(e){ return []; }
+}
+function setRanking(arr){
+  try{ localStorage.setItem(RANK_KEY, JSON.stringify(arr)); }catch(e){}
+}
+function updateLeaderboard(){
+  if(!playerName) return;
+
+  const arr = getRanking();
+  const existing = arr.find(x => (x.name||"") === playerName);
+  if(existing){
+    existing.rolls = Math.max(existing.rolls||0, rollCount||0);
+  }else{
+    arr.push({name: playerName, rolls: rollCount||0});
+  }
+
+  arr.sort((a,b)=> (b.rolls||0) - (a.rolls||0));
+  setRanking(arr.slice(0, 50)); // keep more than 10 internally
+}
+
+function renderRanking(){
+  updateLeaderboard();
+  const meta = document.getElementById("rankingMeta");
+  const list = document.getElementById("rankingList");
+  if(meta) meta.innerHTML = `Your name: <b>${playerName || "—"}</b> • Your rolls: <b>${rollCount}</b>`;
+  if(!list) return;
+
+  const top = getRanking().sort((a,b)=> (b.rolls||0) - (a.rolls||0)).slice(0,10);
+  if(!top.length){
+    list.innerHTML = "<div style='font-size:12px;color:#cfcfcf;'>No ranking data yet. Roll at least once.</div>";
+    return;
+  }
+
+  const rows = top.map((x,i)=>{
+    const me = (x.name === playerName);
+    return `<div style="display:flex;justify-content:space-between;gap:12px;padding:8px 6px;border-bottom:1px solid var(--border);${me?'background:rgba(255,255,255,0.04);border-radius:10px;':''}">
+      <div style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><b>#${i+1}</b> ${x.name || "Player"}</div>
+      <div style="opacity:.9">${x.rolls || 0} rolls</div>
+    </div>`;
+  }).join("");
+
+  list.innerHTML = rows;
+}
+
+function openRanking(){
+  playPanelAnimOpen();
+  setTimeout(()=>{
+    const overlay=document.getElementById('rankingOverlay');
+    overlay.classList.add('show');
+    overlay.setAttribute('aria-hidden','false');
+    renderRanking();
+  }, 260);
+}
+function closeRanking(){
+  const overlay=document.getElementById('rankingOverlay');
+  overlay.classList.remove('show');
+  overlay.setAttribute('aria-hidden','true');
+  playPanelAnimClose();
+}
+
+document.getElementById('rankingClose').onclick = closeRanking;
+document.getElementById('rankingOverlay').addEventListener('click',(e)=>{
+  if(e.target.id==='rankingOverlay') closeRanking();
+});
+
 function openPotions(){
   playPanelAnimOpen();
   setTimeout(()=>{
@@ -3827,6 +4114,7 @@ async function rollAura(){
     refreshRolling();
     rollCount++;
     document.getElementById('rollsLabel').innerText=`Rolls: ${rollCount}`;
+    updateRanking();
     ensureDailyMissions();
 dailyRolls++;
 
@@ -4304,27 +4592,193 @@ setInterval(()=>{
 window.openMissions = openMissions;
 window.closeMissions = closeMissions;
 
+function loadPlayerName(){
+  try{
+    const n = localStorage.getItem(NAME_KEY);
+    if(n && String(n).trim()) playerName = String(n).trim();
+  }catch(e){}
+}
+function setPlayerName(){
+  let current = playerName;
+  try{
+    const stored = localStorage.getItem(NAME_KEY);
+    if(stored && String(stored).trim()) current = String(stored).trim();
+  }catch(e){}
+
+  const n = prompt("Enter your name for Ranking (saved on this device):", current || "");
+  if(n === null) return;
+  const clean = String(n).trim().slice(0, 24);
+  playerName = clean || "Player";
+  try{ localStorage.setItem(NAME_KEY, playerName); }catch(e){}
+  updateRanking();
+  renderRanking();
+}
+window.setPlayerName = setPlayerName;
+
+function loadRanking(){
+  try{
+    const raw = localStorage.getItem(RANK_KEY);
+    if(!raw) return [];
+    const arr = JSON.parse(raw);
+    if(Array.isArray(arr)) return arr;
+  }catch(e){}
+  return [];
+}
+function saveRanking(arr){
+  try{ localStorage.setItem(RANK_KEY, JSON.stringify(arr)); }catch(e){}
+}
+function updateRanking(){
+  const arr = loadRanking();
+  const name = playerName || "Player";
+
+  const existing = arr.find(x => x && x.name === name);
+  if(existing){
+    existing.rolls = Math.max(existing.rolls||0, rollCount||0);
+    existing.updated = Date.now();
+  }else{
+    arr.push({name, rolls: rollCount||0, updated: Date.now()});
+  }
+
+  arr.sort((a,b)=> (b.rolls||0) - (a.rolls||0) || (b.updated||0) - (a.updated||0));
+  const top = arr.slice(0, 10);
+  saveRanking(top);
+}
+
+function renderRanking(){
+  const meta = document.getElementById("rankingMeta");
+  const list = document.getElementById("rankingList");
+  if(!list) return;
+
+  const arr = loadRanking();
+  arr.sort((a,b)=> (b.rolls||0) - (a.rolls||0) || (b.updated||0) - (a.updated||0));
+
+  if(meta){
+    meta.textContent = `Your name: ${playerName} | Your rolls: ${rollCount}`;
+  }
+
+  list.innerHTML = "";
+  if(!arr.length){
+    const empty = document.createElement("div");
+    empty.style.padding = "10px";
+    empty.style.border = "1px dashed var(--border)";
+    empty.style.borderRadius = "14px";
+    empty.style.color = "#cfcfcf";
+    empty.style.fontSize = "12px";
+    empty.textContent = "No ranking data yet. Roll at least once.";
+    list.appendChild(empty);
+    return;
+  }
+
+  arr.slice(0,10).forEach((row, i)=>{
+    const r = document.createElement("div");
+    r.className = "rankRow";
+
+    const left = document.createElement("div");
+    left.className = "rankLeft";
+
+    const pos = document.createElement("div");
+    pos.className = "rankPos";
+    pos.textContent = String(i+1);
+
+    const nm = document.createElement("div");
+    nm.className = "rankName";
+    nm.textContent = row.name || "Player";
+
+    left.appendChild(pos);
+    left.appendChild(nm);
+
+    const rollsEl = document.createElement("div");
+    rollsEl.className = "rankRolls";
+    rollsEl.textContent = `${row.rolls||0} rolls`;
+
+    r.appendChild(left);
+    r.appendChild(rollsEl);
+
+    list.appendChild(r);
+  });
+}
+
+/* overlay open/close */
+function openRanking(){
+  playPanelAnimOpen();
+  setTimeout(()=>{
+    const overlay=document.getElementById('rankingOverlay');
+    overlay.classList.add('show');
+    overlay.setAttribute('aria-hidden','false');
+    if(!playerName || playerName === "Player"){
+      // don't force prompt, but encourage
+      if(!localStorage.getItem(NAME_KEY)) {
+        // optional auto-prompt once
+        setTimeout(()=>{ if(document.getElementById('rankingOverlay')?.classList.contains('show')) setPlayerName(); }, 200);
+      }
+    }
+    renderRanking();
+  }, 260);
+}
+function closeRanking(){
+  const overlay=document.getElementById('rankingOverlay');
+  overlay.classList.remove('show');
+  overlay.setAttribute('aria-hidden','true');
+  playPanelAnimClose();
+}
+
+window.openRanking = openRanking;
+window.closeRanking = closeRanking;
+
+document.getElementById('rankingClose').onclick = closeRanking;
+document.getElementById('rankingOverlay').addEventListener('click',(e)=>{
+  if(e.target.id==='rankingOverlay') closeRanking();
+});
+
 /* =========================
    INIT
 ========================= */
 function runIntro(){
   const overlay = document.getElementById('introOverlay');
+  const msg = document.getElementById('introMessage');
+  const nameBox = document.getElementById('introName');
 
-  overlay.classList.add('show');
+  overlay.style.display = "flex";
 
+  // 1️⃣ primeira mensagem
+  msg.textContent = "This game is heavily inspired by Sols RNG in Roblox.";
+  msg.style.opacity = "1";
+
+  // 2️⃣ segunda mensagem
   setTimeout(()=>{
-    overlay.classList.remove('show');
-    overlay.classList.add('fadeout');
-  }, 2500);
+    msg.style.opacity = "0";
+    setTimeout(()=>{
+      msg.textContent = "A Shit Experiences Game";
+      msg.style.opacity = "1";
+    }, 600);
+  }, 2200);
 
+  // 3️⃣ pergunta do nome
   setTimeout(()=>{
-    overlay.remove();
-    const app = document.getElementById('app');
-    app.classList.add('ready');
-  }, 2500 + 900 + 500);
+    msg.style.opacity = "0";
+    setTimeout(()=>{
+      msg.textContent = "";
+      nameBox.style.display = "block";
+    }, 400);
+  }, 4200);
 }
 
+document.getElementById("playerNameBtn").onclick = ()=>{
+  const input = document.getElementById("playerNameInput");
+  const name = input.value.trim() || "Player";
+
+  localStorage.setItem("an_rng_player_name", name);
+
+  const overlay = document.getElementById('introOverlay');
+  overlay.remove();
+
+  document.getElementById('app').classList.add('ready');
+};
+
+
 loadGame();
+loadPlayerName();
+updateRanking();
 
 ensureDailyMissions();
 refreshRolling();
@@ -4343,26 +4797,6 @@ updateCurrentLuckUI(bonusArmed ? 1.5 : 1);
 
 startBiomeSchedulers();
 setInterval(saveGame, 8000);
-
-
-// =========================
-// PLAYER NAME
-// =========================
-let playerName = localStorage.getItem("an_rng_player_name") || "";
-
-function askPlayerName(){
-  if(!playerName){
-    document.getElementById("nameOverlay").style.display = "flex";
-  }
-}
-
-function confirmPlayerName(){
-  const v = document.getElementById("playerNameInput").value.trim();
-  if(!v) return;
-  playerName = v;
-  localStorage.setItem("an_rng_player_name", playerName);
-  document.getElementById("nameOverlay").style.display = "none";
-}
 
 /* start intro last */
 runIntro();
