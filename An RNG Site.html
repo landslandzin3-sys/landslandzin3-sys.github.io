@@ -1424,6 +1424,209 @@ body{
 @media (max-width: 820px){
   #storageList{grid-template-columns:repeat(3, minmax(0, 1fr));}
 }
+/* =========================
+   Run & Hide cutscene overlay
+========================= */
+#runHideFX{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:1750;   /* acima do Severance (1600) */
+  opacity:0;
+  transition:opacity 120ms ease;
+}
+#runHideFX.show{ opacity:1; }
+
+#runHideFX .rhDim{
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,0.86);
+}
+
+#runHideFX .rhScan{
+  position:absolute;
+  inset:0;
+  background:repeating-linear-gradient(
+    0deg,
+    rgba(255,255,255,0) 0px,
+    rgba(255,255,255,0) 7px,
+    rgba(255,255,255,.06) 7px,
+    rgba(255,255,255,.06) 8px
+  );
+  opacity:.40;
+  mix-blend-mode:screen;
+  animation:rhScan 220ms linear infinite;
+}
+
+@keyframes rhScan{
+  0%{ transform:translateY(-2%); }
+  100%{ transform:translateY(2%); }
+}
+
+#runHideFX .rhWords{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  font-size:64px;
+  font-weight:900;
+  letter-spacing:12px;
+  opacity:0;
+  color:#fff;
+  text-shadow:
+    0 0 18px rgba(255,255,255,.25),
+    0 0 40px rgba(255,255,255,.10);
+  animation:rhPulse 200ms ease-in-out infinite;
+}
+
+@keyframes rhPulse{
+  0%,100%{ transform:translate(-50%,-50%) scale(1); opacity:.35; }
+  50%{ transform:translate(-50%,-50%) scale(1.04); opacity:1; }
+}
+/* =========================
+   MISSIONS UI
+========================= */
+#missionsPanel h2{margin:0 0 10px 0;font-size:18px;letter-spacing:1px;}
+
+.missionsTop{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:10px;
+}
+.missionsMeta{
+  font-size:12px;
+  color:#cfcfcf;
+  line-height:1.35;
+}
+.missionsTabs{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+.missionsTab{
+  border:1px solid rgba(255,255,255,0.9);
+  border-radius:12px;
+  padding:6px 12px;
+  font-size:12px;
+  letter-spacing:0.6px;
+  opacity:0.95;
+}
+
+.missionsLayout{
+  display:grid;
+  grid-template-columns: 1fr 0.95fr;
+  gap:12px;
+}
+@media (max-width: 820px){
+  .missionsLayout{grid-template-columns:1fr;}
+}
+
+.missionsList{
+  border:1px solid var(--border);
+  border-radius:14px;
+  overflow:hidden;
+}
+.missionRow{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:10px 12px;
+  border-bottom:1px solid var(--border);
+  cursor:pointer;
+  background:rgba(0,0,0,0.25);
+  transition:transform 0.12s ease, background 0.12s ease;
+}
+.missionRow:hover{transform:translateY(-1px); background:rgba(255,255,255,0.03);}
+.missionRow:last-child{border-bottom:none;}
+
+.missionLeft{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  min-width:0;
+}
+.missionTitle{
+  font-size:13px;
+  font-weight:700;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.missionProg{
+  font-size:12px;
+  color:#cfcfcf;
+}
+.missionRight{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.missionCheck{
+  width:26px;height:26px;
+  border-radius:8px;
+  border:1px solid rgba(255,255,255,0.9);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:900;
+  font-size:16px;
+  opacity:0.85;
+}
+.missionCheck.done{
+  background:rgba(255,255,255,0.10);
+  box-shadow:0 0 14px rgba(255,255,255,0.12);
+  opacity:1;
+}
+.missionCheck.claimed{
+  opacity:0.35;
+}
+
+.missionDetail{
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:12px;
+  background:rgba(0,0,0,0.22);
+}
+.missionDetail h3{
+  margin:0 0 8px 0;
+  font-size:14px;
+  letter-spacing:0.5px;
+}
+.missionDetail .desc{
+  font-size:12px;
+  color:#cfcfcf;
+  line-height:1.45;
+  margin-bottom:10px;
+}
+.missionDetail .reward{
+  font-size:12px;
+  color:#eaeaea;
+  border:1px dashed var(--border);
+  border-radius:12px;
+  padding:10px;
+  margin-bottom:10px;
+}
+.missionDetail .reward b{letter-spacing:0.5px;}
+.missionDetail .actions{
+  display:flex;
+  gap:8px;
+}
+.missionDetail button{
+  border-radius:12px;
+  border:1px solid white;
+  background:none;
+  color:white;
+  cursor:pointer;
+  padding:7px 10px;
+  flex:1;
+}
+.missionDetail button:disabled{
+  opacity:0.45;
+  cursor:not-allowed;
+}
 </style>
 </head>
 
@@ -1444,6 +1647,7 @@ body{
     <div class="shade"></div>
     <div class="whiteBurst"></div>
   </div>
+  
 
   <!-- Severance cutscene overlay -->
   <div id="severanceFX" aria-hidden="true">
@@ -1451,6 +1655,14 @@ body{
     <div class="flash"></div>
     <div class="popLayer" id="sevPopLayer"></div>
   </div>
+
+  <!-- Run & Hide cutscene overlay -->
+ <div id="runHideFX" aria-hidden="true">
+  <div class="rhDim"></div>
+  <div class="rhScan"></div>
+  <div class="rhWords" id="rhWords"></div>
+ </div>
+
 
   <div id="left">
     <div id="rollingAurasTitle">ROLLING AURAS</div>
@@ -1517,6 +1729,37 @@ body{
       <div id="potionsList"></div>
     </div>
   </div>
+  <!-- MISSIONS OVERLAY -->
+<div id="missionsOverlay" class="overlay" aria-hidden="true">
+  <button class="overlayClose" id="missionsClose" title="Close" aria-label="Close">X</button>
+  <div class="overlayPanel" id="missionsPanel">
+    <h2>MISSIONS</h2>
+
+    <div class="missionsTop">
+      <div class="missionsMeta">
+        <div class="missionsTabs">
+          <div class="missionsTab">Daily</div>
+        </div>
+        <div id="missionsDateLine" style="margin-top:6px; opacity:.9;"></div>
+        <div id="missionsRefreshLine" style="margin-top:2px;"></div>
+      </div>
+    </div>
+
+    <div class="missionsLayout">
+      <div class="missionsList" id="missionsList"></div>
+
+      <div class="missionDetail" id="missionDetail">
+        <h3>Select a mission</h3>
+        <div class="desc">Click a mission on the left to see details and claim the reward.</div>
+        <div class="reward"><b>Reward:</b> —</div>
+        <div class="actions">
+          <button disabled>Claim</button>
+          <button disabled>Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
   <!-- UPDATE LOG OVERLAY -->
   <div id="logOverlay" class="overlay" aria-hidden="true">
@@ -1617,24 +1860,53 @@ const SAVE_KEY = "an_rng_site_save_v10_desert_rain_newauras";
 function saveGame(){
   try{
     const data = {
-      coins, storageLimit, rolling, storage,
-      crafted, craftProgress, effects,
-      potionInventory, potionProgress,
-      activePotionTimers, auroraPotionArmed, legendaryPotionArmed,
+      version: 11,
+
+      coins,
+      storageLimit,
+      rolling,
+      storage,
+
+      crafted,
+      craftProgress,
+      effects,
+
+      potionInventory,
+      potionProgress,
+
+      activePotionTimers,
+      auroraPotionArmed,
+      legendaryPotionArmed,
+
       rollCount,
+
       biomeChanceMultiplier,
       pendingPaperBoostMs,
-      currentBiome, biomeEndTime,
+      currentBiome,
+      biomeEndTime,
 
-      bonusCounter, bonusArmed
+      bonusCounter,
+      bonusArmed,
+
+      // MISSIONS (daily)
+      missionsState,
+      dailyKey,
+      dailyRolls,
+      dailyCometRolls,
+      dailyLuckyUsed,
+      dailyPlayMs,
+      dailyExplored
     };
+
     localStorage.setItem(SAVE_KEY, JSON.stringify(data));
   }catch(e){}
 }
+
 function loadGame(){
   try{
     const raw = localStorage.getItem(SAVE_KEY);
     if(!raw) return;
+
     const data = JSON.parse(raw);
 
     coins = data.coins ?? coins;
@@ -1647,7 +1919,11 @@ function loadGame(){
     effects = data.effects ?? effects;
 
     potionInventory = data.potionInventory ?? potionInventory;
-    potionProgress = data.potionProgress ?? potionProgress;
+
+    // Potion progress can be missing in older saves; keep shape safe
+    if(data.potionProgress){
+      potionProgress = data.potionProgress;
+    }
 
     activePotionTimers = data.activePotionTimers ?? activePotionTimers;
     auroraPotionArmed = data.auroraPotionArmed ?? auroraPotionArmed;
@@ -1657,12 +1933,21 @@ function loadGame(){
 
     biomeChanceMultiplier = data.biomeChanceMultiplier ?? biomeChanceMultiplier;
     pendingPaperBoostMs = data.pendingPaperBoostMs ?? pendingPaperBoostMs;
-
     currentBiome = data.currentBiome ?? currentBiome;
     biomeEndTime = data.biomeEndTime ?? biomeEndTime;
 
     bonusCounter = data.bonusCounter ?? bonusCounter;
     bonusArmed = data.bonusArmed ?? bonusArmed;
+
+    // MISSIONS (daily)
+    if(data.missionsState) missionsState = data.missionsState;
+
+    dailyKey = data.dailyKey ?? dailyKey;
+    dailyRolls = data.dailyRolls ?? dailyRolls;
+    dailyCometRolls = data.dailyCometRolls ?? dailyCometRolls;
+    dailyLuckyUsed = data.dailyLuckyUsed ?? dailyLuckyUsed;
+    dailyPlayMs = data.dailyPlayMs ?? dailyPlayMs;
+    dailyExplored = data.dailyExplored ?? dailyExplored;
   }catch(e){}
 }
 
@@ -1739,7 +2024,7 @@ const zeroAurasData = [
   {name:'Elude', rarity:299999},
   {name:"I'm here?", rarity:500000},
   {name:'Narcospace', rarity:999999},
-  {name:'Run & Hide', rarity:92854}
+  {name:'Run & Hide', rarity:1000000}
 ];
 
 const auroraAurasData = [
@@ -1832,6 +2117,15 @@ function applyBiomeFXClass(){
 
 function setBiome(name, durationMs){
   currentBiome = name;
+  // daily explore tracking
+ensureDailyMissions();
+if(name === "Desert") dailyExplored.Desert = true;
+if(name === "Zero") dailyExplored.Zero = true;
+if(name === "Windstorm") dailyExplored.Windstorm = true;
+if(name === "Chrono") dailyExplored.Chrono = true;
+
+const mo = document.getElementById("missionsOverlay");
+if(mo && mo.classList.contains("show")) renderMissions();
 
   if(pendingPaperBoostMs > 0){
     durationMs += pendingPaperBoostMs;
@@ -2060,6 +2354,30 @@ function startLayersCutscene(onReveal){
     sweep.setAttribute('aria-hidden','true');
   }, 2800);
 }
+function startRunHideCutscene(onReveal){
+  const fx = document.getElementById('runHideFX');
+  const words = document.getElementById('rhWords');
+
+  fx.classList.add('show');
+  fx.setAttribute('aria-hidden','false');
+
+  const seq = ["RUN", "HIDE", "RUN", "HIDE"];
+  let i = 0;
+
+  const timer = setInterval(()=>{
+    words.textContent = seq[i % seq.length];
+    words.style.opacity = "1";
+    i++;
+  }, 200);
+
+  setTimeout(()=>{
+    clearInterval(timer);
+    fx.classList.remove('show');
+    fx.setAttribute('aria-hidden','true');
+    if(typeof onReveal === "function") onReveal();
+  }, 1200);
+}
+
 
 /* =========================
    Severance cutscene
@@ -2535,11 +2853,13 @@ function renderEffects(){
   const needs = getEffectNeeds();
   const box=document.getElementById('effectsList');
 
-  box.innerHTML=`
-    <button class="buyStorageBtn" onclick="openLog()">Update Log</button>
-    <button class="buyStorageBtn" onclick="openStorage()">Storage</button>
-    <button class="buyStorageBtn" onclick="openPotions()">Open Potions Craft</button>
-  `;
+ box.innerHTML=`
+  <button class="buyStorageBtn" onclick="openLog()">Update Log</button>
+  <button class="buyStorageBtn" onclick="openMissions()">Missions</button>
+  <button class="buyStorageBtn" onclick="openStorage()">Storage</button>
+  <button class="buyStorageBtn" onclick="openPotions()">Open Potions Craft</button>
+`;
+
 
   allEffects.forEach(effect=>{
     let html=`<b>${effect}</b>`;
@@ -2758,7 +3078,15 @@ function forceSpawnRandomBiome(){
 
 function usePotion(potionId){
   if((potionInventory[potionId]||0) <= 0) return;
-  potionInventory[potionId]--;
+  ensureDailyMissions();
+if(potionId === "LuckyPotion") dailyLuckyUsed++;
+const mo = document.getElementById("missionsOverlay");
+if(mo && mo.classList.contains("show")) renderMissions();
+
+  // consume 1 potion on use
+  potionInventory[potionId] = Math.max(0, (potionInventory[potionId]||0) - 1);
+  renderPotions();
+  saveGame();
 
   if(potionId === 'LegendaryPotion'){
     legendaryPotionArmed = true;
@@ -3410,6 +3738,19 @@ async function rollAura(){
         setTimeout(()=>rolledEl.classList.remove('rollAnim'),500);
       });
     }
+    else if(first.name === 'Run & Hide'){
+  rolledEl.textContent = "Rolling...";
+  rarityEl.textContent = "";
+  multiEl.textContent = "";
+
+  startRunHideCutscene(()=>{
+    setRolledText(first);
+    rarityEl.textContent = `Rarity: ${first.rarity}`;
+    rolledEl.classList.add('rollAnim');
+    setTimeout(()=>rolledEl.classList.remove('rollAnim'),500);
+  });
+}
+
     else if(first.layers){
       rolledEl.textContent = "Rolling...";
       rarityEl.textContent = "";
@@ -3477,6 +3818,16 @@ async function rollAura(){
     refreshRolling();
     rollCount++;
     document.getElementById('rollsLabel').innerText=`Rolls: ${rollCount}`;
+    ensureDailyMissions();
+dailyRolls++;
+
+for(const p of pickedList){
+  if(p.name === "Comet") dailyCometRolls++;
+}
+
+const mo = document.getElementById("missionsOverlay");
+if(mo && mo.classList.contains("show")) renderMissions();
+
 
     coins += 5;
     updateCoinsUI();
@@ -3530,6 +3881,419 @@ window.usePotion = usePotion;
 window.addToCraft = addToCraft;
 window.equipEffect = equipEffect;
 window.unequipEffect = unequipEffect;
+/* =========================
+   MISSIONS (Daily)
+========================= */
+function todayKey(){
+  const d = new Date();
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth()+1).padStart(2,'0');
+  const dd = String(d.getDate()).padStart(2,'0');
+  return `${yyyy}-${mm}-${dd}`;
+}
+function formatTodayLine(){
+  const d = new Date();
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth()+1).padStart(2,'0');
+  const dd = String(d.getDate()).padStart(2,'0');
+  return `Daily Missions | ${yyyy}.${mm}.${dd}`;
+}
+function msToMidnight(){
+  const now = new Date();
+  const nxt = new Date(now);
+  nxt.setHours(24,0,0,0);
+  return Math.max(0, nxt - now);
+}
+function formatHMS(ms){
+  const s = Math.ceil(ms/1000);
+  const h = Math.floor(s/3600);
+  const m = Math.floor((s%3600)/60);
+  const ss = String(s%60).padStart(2,'0');
+  if(h>0) return `${h}h ${m}m ${ss}s`;
+  return `${m}m ${ss}s`;
+}
+
+/* daily tracked stats */
+let dailyKey = todayKey();
+let dailyRolls = 0;
+let dailyCometRolls = 0;
+let dailyLuckyUsed = 0;
+let dailyPlayMs = 0;
+let dailyExplored = { Desert:false, Zero:false, Windstorm:false, Chrono:false };
+
+let missionsState = {
+  dateKey: dailyKey,
+  picks: [],          // 3 mission ids
+  claimed: {},        // id:true
+  selectedId: null
+};
+
+/* Mission definitions */
+const MISSIONS_POOL = [
+  {
+    id:"roll_comet_5",
+    title:"Roll 5 Comet",
+    type:"comet_rolls",
+    target:5,
+    reward:{ potions:{LuckyPotion:1} },
+    desc:"Track cosmic trails. Find Comet auras to stabilize your luck stream."
+  },
+  {
+    id:"use_lucky_1",
+    title:"Use 1 Lucky Potion",
+    type:"use_potion",
+    potionId:"LuckyPotion",
+    target:1,
+    reward:{ coins:500 },
+    desc:"A quick blessing. Use a Lucky Potion once to prove you're ready."
+  },
+  {
+    id:"roll_500",
+    title:"Roll 500 times",
+    type:"rolls",
+    target:500,
+    reward:{ potions:{FasterPotion:1} },
+    desc:"Endurance test. Keep rolling until the system recognizes your persistence."
+  },
+  {
+    id:"roll_100",
+    title:"Roll 100 times",
+    type:"rolls",
+    target:100,
+    reward:{ potions:{FasterPotion:3} },
+    desc:"Warm up your RNG engine. 100 rolls to unlock accelerated crafting."
+  },
+  {
+    id:"explore_desert",
+    title:"Explore Desert Biome",
+    type:"explore_biome",
+    biome:"Desert",
+    target:1,
+    reward:{ potions:{PaperPotion:1} },
+    desc:"Sandstorm protocols. Enter Desert at least once today."
+  },
+  {
+    id:"explore_zero_rare",
+    title:"Explore Zero Biome",
+    type:"explore_biome",
+    biome:"Zero",
+    target:1,
+    reward:{ potions:{LegendaryPotion:5, NebulaPotion:1} },
+    weight:0.12, // raríssima no sorteio das missões
+    desc:"A forbidden inversion. Reach Zero and survive the colorless silence."
+  },
+  {
+    id:"explore_windstorm",
+    title:"Explore Windstorm Biome",
+    type:"explore_biome",
+    biome:"Windstorm",
+    target:1,
+    reward:{ coins:50 },
+    desc:"Ride the winds. Enter Windstorm at least once today."
+  },
+  {
+    id:"explore_chrono",
+    title:"Explore Chrono Biome",
+    type:"explore_biome",
+    biome:"Chrono",
+    target:1,
+    reward:{ potions:{QuickPotion:1, FasterPotion:5} },
+    desc:"Temporal instability detected. Enter Chrono to sync your timeline."
+  },
+  {
+    id:"reach_1000_coins",
+    title:"Reach 1000 Coins",
+    type:"coins_reach",
+    target:1000,
+    reward:{ potions:{LegendaryPotion:1} },
+    desc:"Financial calibration. Accumulate 1000 coins at once."
+  },
+  {
+    id:"play_10_min",
+    title:"Play for 10 minutes",
+    type:"play_time",
+    targetMs:10*60*1000,
+    reward:{ coins:100 },
+    desc:"Stay online and keep the RNG flowing for 10 minutes."
+  },
+  {
+    id:"play_30_min",
+    title:"Play for 30 minutes",
+    type:"play_time",
+    targetMs:30*60*1000,
+    reward:{ coins:1000 },
+    desc:"Long run session. Play for 30 minutes without giving up."
+  },
+];
+
+function getMissionDef(id){
+  return MISSIONS_POOL.find(m=>m.id===id);
+}
+function rewardText(rew){
+  const parts = [];
+  if(rew.coins) parts.push(`${rew.coins} Coins`);
+  if(rew.potions){
+    for(const k of Object.keys(rew.potions)){
+      const amt = rew.potions[k];
+      const p = POTIONS.find(x=>x.id===k);
+      parts.push(`${amt} ${p ? p.name : k}`);
+    }
+  }
+  return parts.join(", ");
+}
+
+function missionProgress(def){
+  if(!def) return {cur:0, max:1, done:false};
+
+  if(def.type === "comet_rolls"){
+    const cur = dailyCometRolls;
+    return {cur, max:def.target, done: cur>=def.target};
+  }
+  if(def.type === "use_potion"){
+    const cur = dailyLuckyUsed; // só tem Lucky por enquanto
+    return {cur, max:def.target, done: cur>=def.target};
+  }
+  if(def.type === "rolls"){
+    const cur = dailyRolls;
+    return {cur, max:def.target, done: cur>=def.target};
+  }
+  if(def.type === "explore_biome"){
+    const hit = !!dailyExplored[def.biome];
+    return {cur: hit?1:0, max:1, done: hit};
+  }
+  if(def.type === "coins_reach"){
+    const cur = coins;
+    return {cur, max:def.target, done: cur>=def.target};
+  }
+  if(def.type === "play_time"){
+    const cur = dailyPlayMs;
+    return {cur, max:def.targetMs, done: cur>=def.targetMs, isTime:true};
+  }
+  return {cur:0, max:1, done:false};
+}
+
+/* weighted random picks (no repeat) */
+function pickDailyMissions(){
+  const picks = [];
+  const pool = MISSIONS_POOL.slice();
+
+  const weightOf = (m)=> (typeof m.weight === "number" ? m.weight : 1);
+
+  while(picks.length < 3 && pool.length){
+    let total = 0;
+    for(const m of pool) total += weightOf(m);
+
+    let r = Math.random() * total;
+    let idx = 0;
+    for(; idx<pool.length; idx++){
+      r -= weightOf(pool[idx]);
+      if(r <= 0) break;
+    }
+    const chosen = pool.splice(Math.min(idx, pool.length-1), 1)[0];
+    picks.push(chosen.id);
+  }
+  return picks;
+}
+
+function ensureDailyMissions(){
+  const tk = todayKey();
+  if(missionsState.dateKey !== tk){
+    // reset day
+    missionsState.dateKey = tk;
+    missionsState.picks = pickDailyMissions();
+    missionsState.claimed = {};
+    missionsState.selectedId = missionsState.picks[0] || null;
+
+    dailyKey = tk;
+    dailyRolls = 0;
+    dailyCometRolls = 0;
+    dailyLuckyUsed = 0;
+    dailyPlayMs = 0;
+    dailyExplored = { Desert:false, Zero:false, Windstorm:false, Chrono:false };
+
+    saveGame();
+  }
+
+  if(!missionsState.picks || missionsState.picks.length !== 3){
+    missionsState.picks = pickDailyMissions();
+    missionsState.selectedId = missionsState.picks[0] || null;
+  }
+  if(!missionsState.selectedId) missionsState.selectedId = missionsState.picks[0] || null;
+}
+
+function applyMissionReward(rew){
+  if(rew.coins){
+    coins += rew.coins;
+    updateCoinsUI();
+    sfx("coin");
+    pulseUI(document.getElementById('coinsWrap'));
+    floatCoins(+rew.coins);
+  }
+  if(rew.potions){
+    for(const k of Object.keys(rew.potions)){
+      potionInventory[k] = (potionInventory[k]||0) + rew.potions[k];
+    }
+    renderPotions();
+    renderActivePotions();
+  }
+}
+
+function renderMissions(){
+  ensureDailyMissions();
+
+  const dateLine = document.getElementById("missionsDateLine");
+  const refreshLine = document.getElementById("missionsRefreshLine");
+  if(dateLine) dateLine.textContent = formatTodayLine();
+  if(refreshLine) refreshLine.textContent = `Refresh in ${formatHMS(msToMidnight())}`;
+
+  const list = document.getElementById("missionsList");
+  if(!list) return;
+  list.innerHTML = "";
+
+  missionsState.picks.forEach((id)=>{
+    const def = getMissionDef(id);
+    const prog = missionProgress(def);
+    const claimed = !!missionsState.claimed[id];
+
+    const row = document.createElement("div");
+    row.className = "missionRow";
+    row.onclick = ()=>{ missionsState.selectedId = id; renderMissionDetail(); saveGame(); };
+
+    const left = document.createElement("div");
+    left.className = "missionLeft";
+
+    const t = document.createElement("div");
+    t.className = "missionTitle";
+    t.textContent = def ? def.title : id;
+
+    const p = document.createElement("div");
+    p.className = "missionProg";
+    if(prog.isTime){
+      p.textContent = `${formatHMS(prog.cur)} / ${formatHMS(prog.max)}`;
+    }else{
+      p.textContent = `${Math.min(prog.cur, prog.max)} / ${prog.max}`;
+    }
+
+    left.appendChild(t);
+    left.appendChild(p);
+
+    const right = document.createElement("div");
+    right.className = "missionRight";
+
+    const check = document.createElement("div");
+    check.className = "missionCheck";
+    if(claimed) check.classList.add("claimed");
+    if(prog.done) check.classList.add("done");
+    check.textContent = claimed ? "✓" : (prog.done ? "✓" : "");
+
+    right.appendChild(check);
+
+    row.appendChild(left);
+    row.appendChild(right);
+    list.appendChild(row);
+  });
+
+  renderMissionDetail();
+}
+
+function renderMissionDetail(){
+  const panel = document.getElementById("missionDetail");
+  if(!panel) return;
+
+  const id = missionsState.selectedId;
+  const def = getMissionDef(id);
+
+  if(!def){
+    panel.innerHTML = `
+      <h3>Select a mission</h3>
+      <div class="desc">Click a mission on the left to see details and claim the reward.</div>
+      <div class="reward"><b>Reward:</b> —</div>
+      <div class="actions">
+        <button disabled>Claim</button>
+        <button onclick="closeMissions()">Close</button>
+      </div>
+    `;
+    return;
+  }
+
+  const prog = missionProgress(def);
+  const claimed = !!missionsState.claimed[id];
+  const canClaim = prog.done && !claimed;
+
+  panel.innerHTML = `
+    <h3>${def.title}</h3>
+    <div class="desc">${def.desc}</div>
+    <div class="reward">
+      <b>Reward:</b> ${rewardText(def.reward)}<br>
+      <span style="color:#cfcfcf;">
+        Progress: ${prog.isTime ? `${formatHMS(prog.cur)} / ${formatHMS(prog.max)}` : `${Math.min(prog.cur, prog.max)} / ${prog.max}`}
+      </span>
+    </div>
+    <div class="actions">
+      <button id="missionClaimBtn" ${canClaim ? "" : "disabled"}>${claimed ? "Claimed" : "Claim"}</button>
+      <button onclick="closeMissions()">Close</button>
+    </div>
+  `;
+
+  const claimBtn = document.getElementById("missionClaimBtn");
+  if(claimBtn){
+    claimBtn.onclick = ()=>{
+      if(!canClaim) return;
+      missionsState.claimed[id] = true;
+      applyMissionReward(def.reward);
+      sfx("rare");
+      renderMissions();
+      saveGame();
+    };
+  }
+}
+
+/* overlay open/close */
+function openMissions(){
+  playPanelAnimOpen();
+  setTimeout(()=>{
+    const overlay=document.getElementById('missionsOverlay');
+    overlay.classList.add('show');
+    overlay.setAttribute('aria-hidden','false');
+    renderMissions();
+  }, 260);
+}
+function closeMissions(){
+  const overlay=document.getElementById('missionsOverlay');
+  overlay.classList.remove('show');
+  overlay.setAttribute('aria-hidden','true');
+  playPanelAnimClose();
+}
+
+document.getElementById('missionsClose').onclick = closeMissions;
+document.getElementById('missionsOverlay').addEventListener('click',(e)=>{
+  if(e.target.id==='missionsOverlay') closeMissions();
+});
+
+/* refresh timer line */
+setInterval(()=>{
+  ensureDailyMissions();
+  const refreshLine = document.getElementById("missionsRefreshLine");
+  if(refreshLine) refreshLine.textContent = `Refresh in ${formatHMS(msToMidnight())}`;
+}, 1000);
+
+/* playtime tracker (daily) */
+let lastPlayTick = Date.now();
+setInterval(()=>{
+  ensureDailyMissions();
+  if(document.visibilityState !== "visible") return;
+  const now = Date.now();
+  const dt = Math.min(2000, Math.max(0, now - lastPlayTick));
+  lastPlayTick = now;
+  dailyPlayMs += dt;
+  // se overlay aberto, atualiza progresso
+  const overlay = document.getElementById("missionsOverlay");
+  if(overlay && overlay.classList.contains("show")) renderMissions();
+}, 1000);
+
+/* expose */
+window.openMissions = openMissions;
+window.closeMissions = closeMissions;
 
 /* =========================
    INIT
@@ -3553,6 +4317,7 @@ function runIntro(){
 
 loadGame();
 
+ensureDailyMissions();
 refreshRolling();
 refreshStorage();
 renderEffects();
