@@ -3083,6 +3083,11 @@ if(potionId === "LuckyPotion") dailyLuckyUsed++;
 const mo = document.getElementById("missionsOverlay");
 if(mo && mo.classList.contains("show")) renderMissions();
 
+  // consume 1 potion on use
+  potionInventory[potionId] = Math.max(0, (potionInventory[potionId]||0) - 1);
+  renderPotions();
+  saveGame();
+
   if(potionId === 'LegendaryPotion'){
     legendaryPotionArmed = true;
     renderActivePotions();
