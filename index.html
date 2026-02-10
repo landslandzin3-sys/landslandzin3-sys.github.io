@@ -2511,8 +2511,55 @@ body{
 <!-- UPDATE LOG OVERLAY -->
   <div id="logOverlay" class="overlay" aria-hidden="true">
     <button class="overlayClose" id="logClose" title="Close" aria-label="Close">X</button>
-    <div class=has Sand / Tempest / Prague in its pool.</li>
-          <li><b>Rain</b>: -15% rarity (better) for ALL auras with effects + Storage cost 25.</li>
+
+    <div class="overlayPanel" id="logPanel">
+      <h2>Update Log</h2>
+
+      <div class="logSection">
+        <h3>Latest</h3>
+        <ul>
+          <li><b>NEW BIOME:</b> <b>Glitch</b> — biome name displays as binary (e.g. <code>10101010011110101010</code>) while active.</li>
+          <li><b>Desert nerf:</b> removed the luck bonus from Desert.</li>
+          <li><b>Explosion rule:</b> auras with rarity above 1,000,000 trigger a colored explosion on roll.</li>
+        </ul>
+      </div>
+
+      <div class="logSection">
+        <h3>Biome Balancing</h3>
+        <ul>
+          <li><b>Glitch biome rates:</b>
+            <ul>
+              <li><b>Nullscape</b> becomes <b>1 in 100,000</b> during Glitch.</li>
+              <li><b>Glitch</b> becomes <b>1 in 120,000</b> during Glitch.</li>
+            </ul>
+          </li>
+          <li><b>Global rates:</b>
+            <ul>
+              <li><b>Nullscape</b> is <b>1 in 1,000,000</b> globally.</li>
+              <li><b>Glitch</b> is <b>1 in 12,000,000</b> globally.</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+
+      <div class="logSection">
+        <h3>New Auras</h3>
+        <ul>
+          <li><b>Nullscape</b> — ultra rare (global + boosted in Glitch biome).</li>
+          <li><b>Glitch</b> — ultra rare (global + boosted in Glitch biome).</li>
+          <li><b>Distorced</b> — <b>1 in 1,581,842</b>.</li>
+          <li><b>Cyberfantasia</b> — <b>1 in 8,347,824</b>.</li>
+          <li><b>Crazy</b> — <b>1 in 195,825</b>.</li>
+          <li><b>Annihilation</b> — <b>1 in 2,717,532</b>.</li>
+          <li><b>Virtual</b> — <b>1 in 1,200,000</b>.</li>
+        </ul>
+      </div>
+
+      <div class="logSection">
+        <h3>Effects</h3>
+        <ul>
+          <li><b>Dimensional</b> — new effect: blue portal behind the aura name.</li>
+          <li><b>Glitch / Nullscape</b> — UI corruption themes (jitter/warp) tied to their rolls.</li>
         </ul>
       </div>
 
@@ -2526,12 +2573,13 @@ body{
           <li><b>Aurora</b>: faint colored background.</li>
           <li><b>Desert</b>: sand drift behind UI.</li>
           <li><b>Rain</b>: subtle rain streaks (hard to see).</li>
+          <li><b>Glitch</b>: binary display + unstable background when active.</li>
         </ul>
       </div>
     </div>
   </div>
 
-  <!-- shared open/close anim -->
+<!-- shared open/close anim -->
   <div id="panelAnim"></div>
 </div>
 
