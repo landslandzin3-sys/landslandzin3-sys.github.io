@@ -2516,31 +2516,20 @@ body{
       <h2>Update Log</h2>
 
       <div class="logSection">
-        <h3>Latest</h3>
+        <h3>Biomes & Auras (New)</h3>
         <ul>
-          <li><b>NEW BIOME:</b> <b>Glitch</b> — biome name displays as binary (e.g. <code>10101010011110101010</code>) while active.</li>
-          <li><b>Desert nerf:</b> removed the luck bonus from Desert.</li>
-          <li><b>Explosion rule:</b> auras with rarity above 1,000,000 trigger a colored explosion on roll.</li>
+          <li><b>Desert Biome:</b> Added special auras <b>Cactus</b> (green thorn effects) and <b>Arid</b> (dry effects).</li>
+          <li><b>Rain Biome:</b> Added <b>Electricity</b> (blue lightning), <b>Cloud</b> (basic clouds), and <b>Wet</b> (water effects).</li>
+          <li><b>Abyssal Aura:</b> Now <b>GLOBAL</b>, with pulsing depth, fish, and density effects.</li>
+          <li><b>Windstorm Biome:</b> Added <b>Tornado</b> (violent wind) and <b>Air</b> (calm wind event).</li>
+          <li><b>New Auras:</b> <b>Overdrive</b> (red bug/glitch effects) and <b>Matrix</b> (green virtual effects).</li>
+          <li><b>Sound Aura:</b> New yellow/orange sound wave visual effects.</li>
+          <li><b>Glitch Biome:</b> Now rarer than <b>Zero</b>; inside it, all aura rarities are reduced by 50%.</li>
         </ul>
       </div>
 
-      <div class="logSection">
-        <h3>Biome Balancing</h3>
-        <ul>
-          <li><b>Glitch biome rates:</b>
-            <ul>
-              <li><b>Nullscape</b> becomes <b>1 in 100,000</b> during Glitch.</li>
-              <li><b>Glitch</b> becomes <b>1 in 120,000</b> during Glitch.</li>
-            </ul>
-          </li>
-          <li><b>Global rates:</b>
-            <ul>
-              <li><b>Nullscape</b> is <b>1 in 1,000,000</b> globally.</li>
-              <li><b>Glitch</b> is <b>1 in 12,000,000</b> globally.</li>
-            </ul>
-          </li>
-        </ul>
-      </div>
+
+      
 
       <div class="logSection">
         <h3>New Auras</h3>
@@ -2736,6 +2725,8 @@ function loadGame(){
 /* =========================
    AURAS
 ========================= */
+const TEST_MODE = false; // requested: all rarities = 1 for testing
+
 const aurasData=[
   {name:'Layers', rarity:17250, layers:true},
   {name:'Universe', rarity:2100, universe:true},
@@ -2747,6 +2738,9 @@ const aurasData=[
   {name:'Overture', rarity:60000, overture:true},
   {name:'Archangel', rarity:35000, archangel:true},
   {name:'Bloodmoon', rarity:79000, bloodmoon:true},
+
+  {name:'Overdrive', rarity:38215, overdrive:true},
+  {name:'Matrix', rarity:485285, matrix:true},
 
   {name:'Legendary', rarity:500, legendary:true},
   {name:'Money', rarity:600, money:true},
@@ -2793,6 +2787,8 @@ const aurasData=[
   {name:'Hunter',rarity:225, hunter:true},
   {name:'Sound',rarity:400},
 
+  {name:'Abyssal', rarity:2752564, abyssal:true, forceBoom:true},
+
   {name:'Nullscape', rarity:1000000, nullscape:true},
   {name:'Glitch', rarity:12000000, glitch:true},
   // Real rarity: 294525 (using 1 for tests as requested)
@@ -2814,7 +2810,6 @@ const zeroAurasData = [
   {name:'None', rarity:5},
   {name:'Deep', rarity:25},
   {name:'Anomaly', rarity:50},
-  {name:'Abyssal', rarity:250},
   {name:'Limbo', rarity:500},
   {name:'Undefined', rarity:915},
   {name:'Elude', rarity:299999},
@@ -2835,9 +2830,21 @@ const auroraAurasData = [
 
 /* NEW: Desert biome auras */
 const desertAurasData = [
-  {name:'Sand', rarity:25, sand:true},
-  {name:'Tempest', rarity:2500, tempest:true},
-  {name:'Prague', rarity:721, prague:true},
+  {name:'Cactus', rarity:7254, cactus:true},
+  {name:'Arid', rarity:3823, arid:true},
+];
+
+/* NEW: Rain biome auras */
+const rainAurasData = [
+  {name:'Electricity', rarity:4528, electricity:true},
+  {name:'Cloud', rarity:235, cloud:true},
+  {name:'Wet', rarity:5, wet:true},
+];
+
+/* NEW: Windstorm biome auras */
+const windstormAurasData = [
+  {name:'Tornado', rarity:78255, tornado:true},
+  {name:'Air', rarity:25, air:true},
 ];
 
 /* =========================
@@ -2992,7 +2999,7 @@ setInterval(updateBiomeLabel, 250);
 const BIOME_RULES = [
   {name:'Zero', interval:30000, chance:0.001, duration:120000},
   {name:'Aurora', interval:30000, chance:0.005, duration:120000},
-  {name:'Glitch', interval:30000, chance:0.0008, duration:90000}, // NEW
+  {name:'Glitch', interval:30000, chance:0.0005, duration:90000}, // NEW
 
   {name:'Desert', interval:30000, chance:0.25, duration:90000},   // NEW
   {name:'Sky Realm', interval:60000, chance:0.30, duration:90000},
@@ -3340,6 +3347,53 @@ function renderAuraBox(div, aura){
     return;
   }
 
+  if(aura.overdrive || aura.name==='Overdrive'){
+    div.classList.add('overdriveAuraBox');
+    div.innerText = aura.name;
+    return;
+  }
+  if(aura.matrix || aura.name==='Matrix'){
+    div.classList.add('matrixAuraBox');
+    div.innerText = aura.name;
+    return;
+  }
+
+  /* Rain auras */
+  if(aura.electricity || aura.name==='Electricity'){
+    div.classList.add('electricityAuraBox');
+    div.innerText = aura.name;
+    return;
+  }
+  if(aura.cloud || aura.name==='Cloud'){
+    div.classList.add('cloudAuraBox');
+    div.innerText = aura.name;
+    return;
+  }
+  if(aura.wet || aura.name==='Wet'){
+    div.classList.add('wetAuraBox');
+    div.innerText = aura.name;
+    return;
+  }
+
+  /* Windstorm auras */
+  if(aura.tornado || aura.name==='Tornado'){
+    div.classList.add('tornadoAuraBox');
+    div.innerText = aura.name;
+    return;
+  }
+  if(aura.air || aura.name==='Air'){
+    div.classList.add('airAuraBox');
+    div.innerText = aura.name;
+    return;
+  }
+
+  /* Global aura */
+  if(aura.abyssal || aura.name==='Abyssal'){
+    div.classList.add('abyssalAuraBox');
+    div.innerText = aura.name;
+    return;
+  }
+
   if(aura.name==='Dimensional'){
     div.classList.add('dimensionalAuraBox');
     div.innerText = aura.name;
@@ -3368,18 +3422,13 @@ function renderAuraBox(div, aura){
   }
 
   /* Desert auras */
-  if(aura.sand || aura.name==='Sand'){
-    div.classList.add('sandAuraBox');
+  if(aura.cactus || aura.name==='Cactus'){
+    div.classList.add('cactusAuraBox');
     div.innerText = aura.name;
     return;
   }
-  if(aura.tempest || aura.name==='Tempest'){
-    div.classList.add('tempestAuraBox');
-    div.innerText = aura.name;
-    return;
-  }
-  if(aura.prague || aura.name==='Prague'){
-    div.classList.add('pragueAuraBox');
+  if(aura.arid || aura.name==='Arid'){
+    div.classList.add('aridAuraBox');
     div.innerText = aura.name;
     return;
   }
@@ -3401,6 +3450,11 @@ function renderAuraBox(div, aura){
   }
   if(aura.money || aura.name==='Money'){
     div.classList.add('moneyAuraBox');
+    div.innerText = aura.name;
+    return;
+  }
+  if(aura.name==='Sound'){
+    div.classList.add('soundAuraBox');
     div.innerText = aura.name;
     return;
   }
@@ -4259,24 +4313,43 @@ function isAuraWithEffects(a){
 }
 
 function biomeAdjustedRarity(a){
+  // requested: testing mode => all rarities = 1
+  if(TEST_MODE) return 1;
+
   let r = a.rarity;
 
-  // Glitch biome boosts Nullscape/Glitch odds
+  // Glitch biome: ALL auras become 50% less rare (better odds)
   if(currentBiome === 'Glitch' && isBiomeActive()){
-    if(a.name === 'Nullscape') r = 100000;
-    if(a.name === 'Glitch') r = 120000;
+    r = Math.max(1, Math.round(r * 0.5));
   }
 
+  // (existing tweaks)
   if(currentBiome === 'Inferno' && a.name === 'Rage') r = 12;
   if(currentBiome === 'Windstorm' && (a.name === 'Windy' || a.name === 'Windstorm')) r = 5;
   if(currentBiome === 'Sky Realm') r = Math.max(1, Math.round(r * 0.75));
 
-  /* NEW: Rain => ALL auras with effects get rarity reduced by 15% (better) */
+  /* Rain => ALL auras with effects get rarity reduced by 15% (better) */
   if(currentBiome === 'Rain' && isBiomeActive() && isAuraWithEffects(a)){
     r = Math.max(1, Math.round(r * 0.85));
   }
 
+  // keep old special boosts (still apply after 50% reduction)
+  if(currentBiome === 'Glitch' && isBiomeActive()){
+    if(a.name === 'Nullscape') r = Math.max(1, Math.round(100000 * 0.5));
+    if(a.name === 'Glitch')    r = Math.max(1, Math.round(120000 * 0.5));
+  }
+
   return r;
+}
+
+function pickRain(){
+  // Rain auras + base pool
+  return weightedPick(rainAurasData.concat(aurasData));
+}
+
+function pickWindstorm(){
+  // Windstorm auras + base pool
+  return weightedPick(windstormAurasData.concat(aurasData));
 }
 
 /* Desert picker: desert auras + base; commons heavily reduced */
@@ -4387,6 +4460,12 @@ function pickOneAura(){
   if(currentBiome === 'Desert'){
     return pickDesert();
   }
+  if(currentBiome === 'Rain'){
+    return pickRain();
+  }
+  if(currentBiome === 'Windstorm'){
+    return pickWindstorm();
+  }
   return weightedPick(aurasData);
 }
 
@@ -4442,6 +4521,10 @@ function pickWithLegendaryPotionGuarantee(){
   if(currentBiome === 'Zero') pool = aurasData.concat(zeroAurasData);
   if(currentBiome === 'Aurora') pool = auroraAurasData.concat(aurasData);
   if(currentBiome === 'Desert') pool = desertAurasData.concat(aurasData);
+  if(currentBiome === 'Rain') pool = rainAurasData.concat(aurasData);
+  if(currentBiome === 'Windstorm') pool = windstormAurasData.concat(aurasData);
+  if(currentBiome === 'Rain') pool = rainAurasData.concat(aurasData);
+  if(currentBiome === 'Windstorm') pool = windstormAurasData.concat(aurasData);
 
   let candidates = pool.filter(a => biomeAdjustedRarity(a) > 500);
   if(!candidates.length) return pickWithLuckMultiplier(1);
@@ -4458,6 +4541,10 @@ function pickWithAuroraPotionGuarantee(){
   if(currentBiome === 'Zero') pool = aurasData.concat(zeroAurasData);
   if(currentBiome === 'Aurora') pool = auroraAurasData.concat(aurasData);
   if(currentBiome === 'Desert') pool = desertAurasData.concat(aurasData);
+  if(currentBiome === 'Rain') pool = rainAurasData.concat(aurasData);
+  if(currentBiome === 'Windstorm') pool = windstormAurasData.concat(aurasData);
+  if(currentBiome === 'Rain') pool = rainAurasData.concat(aurasData);
+  if(currentBiome === 'Windstorm') pool = windstormAurasData.concat(aurasData);
 
   let candidates = pool.filter(a => biomeAdjustedRarity(a) > 500);
   if(!candidates.length) return pickWithLuckMultiplier(1);
@@ -5553,3 +5640,5 @@ async function startNullscapeCutscene(){
 
 </body>
 </html>
+
+
