@@ -1127,7 +1127,7 @@ body{
   70%  { transform: translate(-50%,-50%) scale(1.08); }
   100% { transform: translate(-50%,-50%) scale(1); }
 }
-.rollAnim{ animation: rollAnim 0.5s cubic-bezier(.2,1.4,.4,1) forwards; }
+.rollAnim{ animation: rollAnim var(--rollAnimDur, 0.5s) cubic-bezier(.2,1.4,.4,1) forwards; }
 
 /* click spark */
 .spark{
@@ -2420,6 +2420,75 @@ body{
   animation: cbShake 520ms ease-out both;
 }
 
+/* Welcome back smooth overlay */
+#welcomeBack{
+  position:fixed;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#000;  
+  opacity:1;
+  transition:opacity 600ms ease;
+  z-index:9999;
+}
+#welcomeBack.show{ opacity:1; }
+
+.welcomeText{
+  font-size:20px;
+  letter-spacing:1.2px;
+  color:#eaeaea;
+  opacity:0;
+  transform:translateY(6px);
+  transition:opacity 700ms ease, transform 700ms ease;
+}
+#welcomeBack.show .welcomeText{
+  opacity:0.95;
+  transform:translateY(0);
+}
+
+
+/* ===== COLLECTION ===== */
+.collectionList{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+.collectionRow{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:8px 10px;
+  border:1px solid rgba(255,255,255,0.18);
+  border-radius:10px;
+  background:rgba(255,255,255,0.03);
+}
+.collectionLeft{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+.collectionName{
+  font-weight:600;
+  letter-spacing:.3px;
+}
+.collectionName.locked{
+  opacity:.55;
+  font-weight:500;
+}
+.collectionMeta{
+  font-size:12px;
+  opacity:.75;
+}
+.collectionCount{
+  font-size:12px;
+  opacity:.85;
+  padding:4px 8px;
+  border:1px solid rgba(255,255,255,0.18);
+  border-radius:999px;
+  background:rgba(0,0,0,0.25);
+}
+
 </style>
 </head>
 
@@ -2463,7 +2532,7 @@ body{
   <div id="center">
     <div id="titleWrap">
       <div id="title">AN RNG SITE</div>
-      <div id="subtitle">Realm's Expasion</div>
+      <div id="subtitle">Moving on to something better</div>
     </div>
 
     <div id="effectEquippedLabel">Effect Equipped: None</div>
@@ -2507,7 +2576,15 @@ body{
           <button onclick="buyAllStorage()">Buy All</button>
         </div>
       </div>
-      <div id="storageList"></div>
+      
+<div style="margin-bottom:10px;">
+  <input id="storageSearch" type="text" placeholder="Search auras..."
+    style="width:100%;padding:8px 10px;border-radius:10px;
+    border:1px solid rgba(255,255,255,0.35);
+    background:rgba(0,0,0,0.45);color:#fff;">
+</div>
+
+<div id="storageList"></div>
       <div class="storageHint">Click auras in <b>ROLLING AURAS</b> to send to Storage. Slot limit still applies.</div>
     </div>
   </div>
@@ -2556,12 +2633,53 @@ body{
   <!-- RANKING OVERLAY -->
   </div>
 
+
+<!-- COLLECTION OVERLAY -->
+<div id="collectionOverlay" class="overlay" aria-hidden="true">
+  <button class="overlayClose" id="collectionClose" title="Close" aria-label="Close">X</button>
+  <div class="overlayPanel" id="collectionPanel">
+    <h2>COLLECTION</h2>
+    <div style="opacity:.9; margin-bottom:10px;">All auras in rarity order. Locked auras will reveal once obtained.</div>
+    <div style="margin-bottom:10px;">
+      <input id="collectionSearch" type="text" placeholder="Search..." style="width:100%;padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,0.35);background:rgba(0,0,0,0.45);color:#fff;">
+    </div>
+    <div id="collectionList" class="collectionList"></div>
+  </div>
+</div>
+
+
 <!-- UPDATE LOG OVERLAY -->
   <div id="logOverlay" class="overlay" aria-hidden="true">
     <button class="overlayClose" id="logClose" title="Close" aria-label="Close">X</button>
 
     <div class="overlayPanel" id="logPanel">
       <h2>Update Log</h2>
+
+      <!-- =========================
+           Update 2 - Moving to something Better (Patch 1.2)
+      ========================= -->
+      <div class="logSection">
+        <h3>Update 2 - Moving to something Better (Patch 1.2)</h3>
+        <ul>
+          <li>Implementado o sistema de <b>Coleção de Auras</b>.</li>
+          <li>A coleção registra e persiste automaticamente as auras obtidas.</li>
+          <li>Auras não obtidas permanecem em estado <b>locked</b>.</li>
+          <li>O sistema de busca ignora auras bloqueadas, retornando lista vazia.</li>
+          <li>A renderização da coleção exibe exclusivamente auras desbloqueadas.</li>
+          <li>Integração direta entre o sistema de roll e a coleção.</li>
+        </ul>
+      </div>
+
+
+<div class="logSection">
+  <h3>UI & Quality of Life</h3>
+  <ul>
+    <li><b>Storage:</b> Added aura search bar to quickly filter stored auras.</li>
+    <li><b>Welcome Back:</b> New smooth welcome message shown on every visit after the first.</li>
+    <li><b>Transitions:</b> Welcome screen now fades in and out smoothly, and the game appears with a soft transition.</li>
+  </ul>
+</div>
+
 
       <div class="logSection">
         <h3>Biomes & Auras (New)</h3>
@@ -2768,6 +2886,8 @@ function loadGame(){
     dailyPlayMs = data.dailyPlayMs ?? dailyPlayMs;
     dailyExplored = data.dailyExplored ?? dailyExplored;
   }catch(e){}
+
+  try{ loadCollection(); syncCollectionFromOwned(); }catch(e){}
 }
 
 /* =========================
@@ -2899,11 +3019,14 @@ const windstormAurasData = [
    STATE
 ========================= */
 let rolling=[], storage=[], effects=[], crafted={
+
   Windstorm:false,
   Lumi:false,
   CometBlessing:false,
   GalaxySpace:false,
   UniverseBreaths:false,
+  ColorMadness:false,
+  ImpactFrame:false,
   Timing:false,
   Sunshine:false,
   FullMoon:false,
@@ -2921,11 +3044,17 @@ let craftProgress={
 
   UniverseBreaths:{Universe:0, Comet:0, Galaxy:0},
 
+
+  ColorMadness:{Chromatic:0, Sound:0, Eclipse:0, Balance:0},
+
+  ImpactFrame:{Severance:0, Photon:0, Universe:0},
+
   Timing:{TIME:0,Topaz:0,Alt:0,Photon:0},
   Sunshine:{Sol:0,Rare:0,Blaze:0},
   FullMoon:{Lua:0,Rare:0,Night:0},
   Eclipse:{Sunshine:0,FullMoon:0,Eclipse:0},
   PureHate:{Rage:0,Blaze:0,Hunter:0}
+
 };
 
 let coins=0, storageLimit=5, rollingLock=false, rollCount=0;
@@ -3669,7 +3798,9 @@ function buyStorage(){
   storageLimit++;
   updateCoinsUI();
   renderEffects();
-  refreshStorage();
+  
+  updateSpeedVars();
+refreshStorage();
   saveGame();
 }
 
@@ -3721,7 +3852,9 @@ function getVisibleLuckPercent(){
   if(effects.includes('GalaxySpace')) pct += 425;
   if(effects.includes('UniverseBreaths')) pct += 625;
 
-  if(luckyActive) pct += 100;
+  
+  if(effects.includes('ColorMadness')) pct += 1100;
+if(luckyActive) pct += 100;
   if(hunterPotionActive) pct += 350;
 
   return pct;
@@ -3743,6 +3876,8 @@ const allEffects = [
   'CometBlessing',
   'GalaxySpace',
   'UniverseBreaths',
+  'ColorMadness',
+  'ImpactFrame',
   'Timing',
   'Sunshine',
   'FullMoon',
@@ -3774,6 +3909,11 @@ function getEffectNeeds(){
     GalaxySpace:{Galaxy:1, Dimensional:1, CometBlessing:1},
 
     UniverseBreaths:{Universe:1, Comet:5, Galaxy:1},
+
+
+    ColorMadness:{Chromatic:1, Sound:50, Eclipse:25, Balance:5},
+
+    ImpactFrame:{Severance:1, Photon:25, Universe:5},
 
     Timing:{TIME:1,Topaz:5,Alt:1,Photon:3},
     Sunshine:{Sol:1,Rare:15,Blaze:1},
@@ -3855,6 +3995,7 @@ function renderEffects(){
  box.innerHTML=`
   <button class="buyStorageBtn" onclick="openLog()">Update Log</button>
   <button class="buyStorageBtn" onclick="openMissions()">Missions</button>
+  <button class="buyStorageBtn" onclick="openCollection()">Collection</button>
   <button class="buyStorageBtn" onclick="openStorage()">Storage</button>
   <button class="buyStorageBtn" onclick="openPotions()">Open Potions Craft</button>
 `;
@@ -3863,11 +4004,13 @@ function renderEffects(){
   allEffects.forEach(effect=>{
     let html=`<b>${effect}</b>`;
     switch(effect){
+      case 'ColorMadness': html+=`<br>+1100% Luck<br>+50% Roll Speed`; break;
       case 'Windstorm': html+=`<br>+50% Luck<br>-10% Roll Speed`; break;
       case 'Lumi': html+=`<br>+100% Luck<br>-25% Roll Speed`; break;
       case 'CometBlessing': html+=`<br>+250% Luck`; break;
       case 'GalaxySpace': html+=`<br>+425% Luck<br>-5% Roll Speed`; break;
       case 'UniverseBreaths': html+=`<br>+625% Luck<br>+25% Roll Speed`; break;
+      case 'ImpactFrame': html+=`<br>Rolls 2 auras at once`; break;
       case 'Timing': html+=`<br>-35% Rolling... delay`; break;
       case 'Sunshine': html+=`<br>Use 3 effects at the same time`; break;
       case 'FullMoon': html+=`<br>Storage discount, storage cost 25 coins`; break;
@@ -4663,11 +4806,26 @@ function flashWhiteScreen(){
 document.getElementById('rollBtn').onclick = ()=>rollAura();
 
 function getMultiRollCount(){
-  if(!effects.includes('PureHate')) return 1;
+  // Impact Frame: always at least 2 rolls per spin
+  const base = effects.includes('ImpactFrame') ? 2 : 1;
+
+  // PureHate: chance-based multi-roll
+  if(!effects.includes('PureHate')) return base;
+
   const r = Math.random();
-  if(r < 0.15) return 3;
-  if(r < 0.15 + 0.35) return 2;
-  return 1;
+  let ph = 1;
+  if(r < 0.15) ph = 3;
+  else if(r < 0.15 + 0.35) ph = 2;
+
+  return Math.max(base, ph);
+}
+
+
+function updateSpeedVars(){
+  // Affects aura expand/return animation for ALL effects (global)
+  const mult = getCooldownMultiplier ? getCooldownMultiplier() : 1;
+  const dur = Math.max(0.08, 0.5 * mult); // base 0.5s scaled
+  document.documentElement.style.setProperty('--rollAnimDur', dur + 's');
 }
 
 function getCooldownMultiplier(){
@@ -4679,7 +4837,9 @@ function getCooldownMultiplier(){
 
   if(effects.includes('UniverseBreaths')) m *= 0.75;
 
-  if(fasterActive) m *= 0.50;
+  
+  if(effects.includes('ColorMadness')) m *= (1/1.5);
+if(fasterActive) m *= 0.50;
 
   return m;
 }
@@ -4689,7 +4849,9 @@ function getRollingDelayMs(){
 
   if(effects.includes('Timing')) d = Math.round(d * 0.65);
 
-  const chrono = (currentBiome === 'Chrono' && isBiomeActive());
+  
+  if(effects.includes('ColorMadness')) d = Math.round(d * (1/1.5));
+const chrono = (currentBiome === 'Chrono' && isBiomeActive());
   if(fasterActive || chrono) d = 0;
 
   return d;
@@ -4836,6 +4998,7 @@ async function rollAura(){
       if(!picked) picked = pickWithLuckMultiplier(bonusLuckMult);
       pickedList.push(picked);
       rolling.push(picked);
+      try{ unlockAuraInCollection(picked.name); }catch(e){}
     }
 
     const first = pickedList[0];
@@ -5679,6 +5842,180 @@ async function startNullscapeCutscene(){
   window.startSeveranceCutscene = (cb)=>stub(cb, 820);
   window.startLayersCutscene = ()=>stub(null, 720);
   window.startRunHideCutscene = ()=>stub(null, 720);
+})();
+
+
+// Storage aura search
+const storageSearch = document.getElementById("storageSearch");
+if(storageSearch){
+  storageSearch.addEventListener("input", () => {
+    const q = storageSearch.value.toLowerCase();
+    document.querySelectorAll("#storageList .auraBox").forEach(box => {
+      const name = box.textContent.toLowerCase();
+      box.style.display = name.includes(q) ? "" : "none";
+    });
+  });
+}
+
+// Welcome back message (2nd visit+)
+const visits = Number(localStorage.getItem("visits") || 0) + 1;
+localStorage.setItem("visits", visits);
+if(visits > 1){
+  const msg = document.createElement("div");
+  msg.id = "welcomeBack";
+  msg.innerHTML = "<div class='welcomeText'>Oh, welcome back!</div>";
+  document.body.appendChild(msg);
+
+  // fade in
+  requestAnimationFrame(()=> msg.classList.add("show"));
+
+  // fade out
+  setTimeout(()=> msg.classList.remove("show"), 1600);
+  setTimeout(()=> msg.remove(), 2200);
+}
+
+
+
+/* =========================
+   COLLECTION SYSTEM
+========================= */
+let collectionUnlocked = new Set();
+
+function loadCollection(){
+  try{
+    const arr = JSON.parse(localStorage.getItem('collectionUnlocked') || '[]');
+    collectionUnlocked = new Set(Array.isArray(arr) ? arr : []);
+  }catch(e){
+    collectionUnlocked = new Set();
+  }
+}
+function saveCollection(){
+  try{
+    localStorage.setItem('collectionUnlocked', JSON.stringify(Array.from(collectionUnlocked)));
+  }catch(e){}
+}
+
+function unlockAuraInCollection(name){
+  if(!name) return;
+  if(!collectionUnlocked.has(name)){
+    collectionUnlocked.add(name);
+    saveCollection();
+  }
+}
+
+function syncCollectionFromOwned(){
+  try{
+    for(const a of (rolling||[])) unlockAuraInCollection(a?.name);
+    for(const a of (storage||[])) unlockAuraInCollection(a?.name);
+  }catch(e){}
+}
+
+function getOwnedCountByName(){
+  const counts = Object.create(null);
+  for(const a of (rolling||[])){
+    const n=a?.name; if(!n) continue;
+    counts[n]=(counts[n]||0)+1;
+  }
+  for(const a of (storage||[])){
+    const n=a?.name; if(!n) continue;
+    counts[n]=(counts[n]||0)+1;
+  }
+  return counts;
+}
+
+function getAllAurasForCollection(){
+  // Prefer aurasData (main list)
+  if(typeof aurasData !== 'undefined' && Array.isArray(aurasData)) return aurasData;
+  // Fallbacks
+  if(typeof window.aurasData !== 'undefined' && Array.isArray(window.aurasData)) return window.aurasData;
+  return [];
+}
+
+function renderCollection(){
+  const list = document.getElementById('collectionList');
+  if(!list) return;
+
+  syncCollectionFromOwned();
+
+  const q = (document.getElementById('collectionSearch')?.value || '').toLowerCase().trim();
+  const ownedCounts = getOwnedCountByName();
+
+  const all = getAllAurasForCollection()
+    .slice()
+    .sort((a,b)=> (a.rarity||0) - (b.rarity||0));
+
+  list.innerHTML = '';
+  for(const aura of all){
+    const name = aura?.name || '';
+    const rarity = aura?.rarity ?? 0;
+
+    const unlocked = collectionUnlocked.has(name);
+    const displayName = unlocked ? name : 'Locked';
+
+    if(q){
+      // If the player searches for a locked aura, show NOTHING (hide locked entries entirely)
+      if(!unlocked) continue;
+      const hay = (name + ' ' + rarity).toLowerCase();
+      if(!hay.includes(q)) continue;
+    }
+
+    const row = document.createElement('div');
+    row.className = 'collectionRow';
+
+    const left = document.createElement('div');
+    left.className = 'collectionLeft';
+
+    const n = document.createElement('div');
+    n.className = 'collectionName' + (unlocked ? '' : ' locked');
+    n.textContent = displayName;
+
+    const meta = document.createElement('div');
+    meta.className = 'collectionMeta';
+    meta.textContent = `1 in ${rarity}`;
+
+    left.appendChild(n);
+    left.appendChild(meta);
+
+    const count = document.createElement('div');
+    count.className = 'collectionCount';
+    const c = ownedCounts[name] || 0;
+    count.textContent = unlocked ? (c>0 ? `Owned: ${c}` : 'Owned: 0') : '—';
+
+    row.appendChild(left);
+    row.appendChild(count);
+
+    list.appendChild(row);
+  }
+}
+
+function openCollection(){
+  playPanelAnimOpen?.();
+  setTimeout(()=>{
+    const overlay=document.getElementById('collectionOverlay');
+    if(!overlay) return;
+    overlay.classList.add('show');
+    overlay.setAttribute('aria-hidden','false');
+    renderCollection();
+  }, 80);
+}
+function closeCollection(){
+  const overlay=document.getElementById('collectionOverlay');
+  if(!overlay) return;
+  overlay.classList.remove('show');
+  overlay.setAttribute('aria-hidden','true');
+}
+
+(function wireCollection(){
+  document.addEventListener('DOMContentLoaded', ()=>{
+    loadCollection();
+    syncCollectionFromOwned();
+
+    const closeBtn = document.getElementById('collectionClose');
+    if(closeBtn) closeBtn.addEventListener('click', closeCollection);
+
+    const search = document.getElementById('collectionSearch');
+    if(search) search.addEventListener('input', renderCollection);
+  });
 })();
 
 </script>
