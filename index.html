@@ -974,6 +974,54 @@ body{
   mix-blend-mode:screen;
 }
 
+
+/* Sound -> yellow/orange sound waves */
+.soundAuraBox{
+  color:#fff6d6;
+  text-shadow:0 0 10px rgba(255,200,80,.45), 0 0 18px rgba(255,120,0,.25);
+  overflow:hidden;
+}
+.soundAuraBox::before{
+  content:"";
+  position:absolute; inset:-55%;
+  background:
+    repeating-radial-gradient(
+      circle,
+      rgba(255,200,80,0.42) 0 6px,
+      rgba(255,140,0,0.28) 6px 12px,
+      rgba(0,0,0,0) 12px 22px
+    );
+  opacity:.55;
+  animation:soundPulse 720ms ease-in-out infinite;
+  pointer-events:none;
+  mix-blend-mode:screen;
+}
+.soundAuraBox::after{
+  content:"";
+  position:absolute; inset:-45%;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(0,0,0,0) 0px,
+      rgba(0,0,0,0) 18px,
+      rgba(255,200,80,.10) 18px,
+      rgba(255,200,80,.10) 19px
+    );
+  opacity:.30;
+  animation:soundSweep 1.1s linear infinite;
+  pointer-events:none;
+  mix-blend-mode:screen;
+}
+@keyframes soundPulse{
+  0%,100%{transform:scale(0.92); filter:blur(.55px);}
+  50%{transform:scale(1.04); filter:blur(.15px);}
+}
+@keyframes soundSweep{
+  0%{transform:translateX(-4%) rotate(-2deg);}
+  100%{transform:translateX(4%) rotate(2deg);}
+}
+
+
 /* CENTER */
 #center{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;}
 #titleWrap{display:flex;flex-direction:column;align-items:center;gap:2px;margin-bottom:2px;}
