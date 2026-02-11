@@ -5801,6 +5801,35 @@ async function startNullscapeCutscene(){
 
     // Biome schedulers & periodic save
     safe(()=>startBiomeSchedulers());
+
+    // =========================
+    // PLAY-TIME TRACKER (MISSIONS)
+    // Counts real active play time (while tab is visible) and persists via saveGame().
+    // =========================
+    let __lastPlayTick = Date.now();
+    document.addEventListener("visibilitychange", ()=>{ __lastPlayTick = Date.now(); });
+    safe(()=>setInterval(()=>{
+      try{
+        if(document.visibilityState !== "visible") return;
+
+        ensureDailyMissions();
+
+        const now = Date.now();
+        let delta = now - __lastPlayTick;
+        __lastPlayTick = now;
+
+        // clamp unexpected jumps (sleep/resume) so missions don't insta-complete
+        if(delta < 0) delta = 0;
+        if(delta > 5000) delta = 1000;
+
+        dailyPlayMs = (dailyPlayMs || 0) + delta;
+
+        // If missions UI is open, refresh progress + timer label
+        const mo = document.getElementById("missionsOverlay");
+        if(mo && mo.classList.contains("show")) renderMissions();
+      }catch(e){}
+    }, 1000));
+
     safe(()=>setInterval(saveGame, 8000));
 
     // Save on exit/background
