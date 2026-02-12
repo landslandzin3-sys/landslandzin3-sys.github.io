@@ -2851,8 +2851,6 @@ function loadGame(){
     craftProgress = data.craftProgress ?? craftProgress;
     effects = data.effects ?? effects;
 
-    ensureCraftSaveShape();
-
     potionInventory = data.potionInventory ?? potionInventory;
 
     // Potion progress can be missing in older saves; keep shape safe
@@ -3926,38 +3924,16 @@ function getEffectNeeds(){
   };
 }
 
-/* =========================
-   Craft save migration (fix missing recipe keys in old saves)
-========================= */
-function getDefaultCraftProgress(){
-  const needs = getEffectNeeds();
-  const out = {};
-  for(const eff in needs){
-    out[eff] = {};
-    for(const item in needs[eff]) out[eff][item] = 0;
-  }
-  return out;
-}
-function ensureCraftSaveShape(){
-  const def = getDefaultCraftProgress();
-
-  if(!crafted || typeof crafted !== "object") crafted = {};
-  if(!craftProgress || typeof craftProgress !== "object") craftProgress = {};
-
-  // effects crafted flags
-  for(const eff in def){
-    if(typeof crafted[eff] !== "boolean") crafted[eff] = false;
-    if(!craftProgress[eff] || typeof craftProgress[eff] !== "object") craftProgress[eff] = {};
-    for(const item in def[eff]){
-      if(typeof craftProgress[eff][item] !== "number") craftProgress[eff][item] = 0;
-    }
-  }
-}
-
 function addToCraft(effect){
   const needs = getEffectNeeds();
   const eNeed = needs[effect];
   if(!eNeed) return;
+
+  // Ensure craftProgress has this effect (important for older saves)
+  if(!craftProgress[effect]) craftProgress[effect] = {};
+  for(const k in eNeed){
+    if(typeof craftProgress[effect][k] !== "number") craftProgress[effect][k] = 0;
+  }
 
   // Special: some recipes require crafted EFFECTS (not auras in storage)
   if(effect === "Eclipse"){
