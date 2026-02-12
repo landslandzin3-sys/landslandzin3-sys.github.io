@@ -2673,12 +2673,11 @@ body{
 
 
 <div class="logSection">
-  <h3>Patch 1.2.1 – Crafting Fix</h3>
+  <h3>UI & Quality of Life</h3>
   <ul>
-    <li>Fixed an issue where auras could not be added to <b>Color Madness</b> and <b>Impact Frame</b>.</li>
-    <li>Crafting progress is now properly initialized for older save files.</li>
-    <li>Ensured crafting recipes correctly accept required auras even after updates.</li>
-    <li>Improved save compatibility to prevent crafting desynchronization.</li>
+    <li><b>Storage:</b> Added aura search bar to quickly filter stored auras.</li>
+    <li><b>Welcome Back:</b> New smooth welcome message shown on every visit after the first.</li>
+    <li><b>Transitions:</b> Welcome screen now fades in and out smoothly, and the game appears with a soft transition.</li>
   </ul>
 </div>
 
@@ -2847,6 +2846,10 @@ function loadGame(){
     storageLimit = data.storageLimit ?? storageLimit;
     rolling = data.rolling ?? rolling;
     storage = data.storage ?? storage;
+
+    // Normalize old saves: storage/rolling may contain strings instead of aura objects
+    storage = (storage || []).map(x => (typeof x === 'string') ? {name:x, rarity:1} : x);
+    rolling = (rolling || []).map(x => (typeof x === 'string') ? {name:x, rarity:1} : x);
 
     crafted = data.crafted ?? crafted;
     craftProgress = data.craftProgress ?? craftProgress;
@@ -3930,11 +3933,9 @@ function addToCraft(effect){
   const eNeed = needs[effect];
   if(!eNeed) return;
 
-  // Ensure craftProgress has this effect (important for older saves)
-  if(!craftProgress[effect]) craftProgress[effect] = {};
-  for(const k in eNeed){
-    if(typeof craftProgress[effect][k] !== "number") craftProgress[effect][k] = 0;
-  }
+  // Ensure save-shape compatibility for older saves
+  craftProgress[effect] = craftProgress[effect] || {};
+  for(const a in eNeed){ if(craftProgress[effect][a] == null) craftProgress[effect][a] = 0; }
 
   // Special: some recipes require crafted EFFECTS (not auras in storage)
   if(effect === "Eclipse"){
@@ -3960,12 +3961,13 @@ function addToCraft(effect){
     if(effect === "Eclipse" && (aura === "Sunshine" || aura === "FullMoon")) continue;
 
     let required = eNeed[aura] - (craftProgress[effect]?.[aura] ?? 0);
-    let inStorage = storage.filter(x=>x.name===aura).length;
+    let inStorage = storage.filter(x=>(x && typeof x==='object' ? x.name : x)===aura).length;
     let toAdd = Math.min(required,inStorage);
 
     if(toAdd>0){
       for(let i=0;i<storage.length && toAdd>0;i++){
-        if(storage[i].name===aura){
+        const nm = (storage[i] && typeof storage[i]==='object') ? storage[i].name : storage[i];
+        if(nm===aura){
           storage.splice(i,1);
           toAdd--;
           craftProgress[effect][aura] = (craftProgress[effect][aura] ?? 0) + 1;
