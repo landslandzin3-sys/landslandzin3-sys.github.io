@@ -2913,7 +2913,13 @@ const aurasData=[
   {name:'Bloodmoon', rarity:79000, bloodmoon:true},
 
   {name:'Overdrive', rarity:38215, overdrive:true},
-  {name:'Matrix', rarity:485285, matrix:true},
+    {name:'Matrix', rarity:485285, matrix:true},
+
+  /* NEW auras (Update 2 / Patch 1.2.2) */
+  {name:'Joker',  rarity:(TEST_MODE?1:67), joker:true},
+  {name:'Plasma', rarity:(TEST_MODE?1:7500), plasma:true},
+  {name:'Cosmic', rarity:(TEST_MODE?1:500000), cosmic:true},
+
 
   {name:'Legendary', rarity:500, legendary:true},
   {name:'Money', rarity:600, money:true},
@@ -3019,6 +3025,12 @@ const windstormAurasData = [
   {name:'Tornado', rarity:78255, tornado:true},
   {name:'Air', rarity:25, air:true},
 ];
+
+/* Glitch biome exclusive auras */
+const glitchAurasData = [
+  {name:'Bug', rarity:(TEST_MODE?1:5000), bug:true}
+];
+
 
 /* =========================
    STATE
@@ -4553,6 +4565,12 @@ function pickWindstorm(){
   return weightedPick(windstormAurasData.concat(aurasData));
 }
 
+
+
+function pickGlitch(){
+  // Glitch = main pool + glitch exclusives
+  return weightedPick(aurasData.concat(glitchAurasData));
+}
 /* Desert picker: desert auras + base; commons heavily reduced */
 function pickDesert(){
   const baseHigh = aurasData.filter(a => a.rarity > 100);
@@ -5934,11 +5952,29 @@ function getOwnedCountByName(){
 }
 
 function getAllAurasForCollection(){
-  // Prefer aurasData (main list)
-  if(typeof aurasData !== 'undefined' && Array.isArray(aurasData)) return aurasData;
-  // Fallbacks
-  if(typeof window.aurasData !== 'undefined' && Array.isArray(window.aurasData)) return window.aurasData;
-  return [];
+  // Build a full catalog (main + biome-specific)
+  const all = [];
+  const pushArr = (arr)=>{
+    if(Array.isArray(arr)) for(const a of arr) all.push(a);
+  };
+
+  pushArr(typeof aurasData !== 'undefined' ? aurasData : []);
+  pushArr(typeof zeroAurasData !== 'undefined' ? zeroAurasData : []);
+  pushArr(typeof auroraAurasData !== 'undefined' ? auroraAurasData : []);
+  pushArr(typeof desertAurasData !== 'undefined' ? desertAurasData : []);
+  pushArr(typeof rainAurasData !== 'undefined' ? rainAurasData : []);
+  pushArr(typeof windstormAurasData !== 'undefined' ? windstormAurasData : []);
+  pushArr(typeof glitchAurasData !== 'undefined' ? glitchAurasData : []);
+
+  // Deduplicate by name (keep the highest rarity entry if duplicates exist)
+  const byName = new Map();
+  for(const a of all){
+    const n = a?.name;
+    if(!n) continue;
+    const prev = byName.get(n);
+    if(!prev || (a.rarity||0) > (prev.rarity||0)) byName.set(n, a);
+  }
+  return Array.from(byName.values());
 }
 
 function renderCollection(){
