@@ -2851,6 +2851,8 @@ function loadGame(){
     craftProgress = data.craftProgress ?? craftProgress;
     effects = data.effects ?? effects;
 
+    ensureCraftSaveShape();
+
     potionInventory = data.potionInventory ?? potionInventory;
 
     // Potion progress can be missing in older saves; keep shape safe
@@ -3041,20 +3043,20 @@ let craftProgress={
 
   CometBlessing:{Comet:0, Light:0, Windstorm:0},
 
-  GalaxySpace:{Galaxy:1, Dimensional:1, CometBlessing:1},
+  GalaxySpace:{Galaxy:0, Dimensional:0, CometBlessing:0},
 
-  UniverseBreaths:{Universe:1, Comet:5, Galaxy:1},
+  UniverseBreaths:{Universe:0, Comet:0, Galaxy:0},
 
 
-  ColorMadness:{Chromatic:1, Sound:50, Eclipse:25, Balance:5},
+  ColorMadness:{Chromatic:0, Sound:0, Eclipse:0, Balance:0},
 
-  ImpactFrame:{Severance:1, Photon:25, Universe:5},
+  ImpactFrame:{Severance:0, Photon:0, Universe:0},
 
-  Timing:{TIME:1,Topaz:5,Alt:1,Photon:3},
-  Sunshine:{Sol:1,Rare:15,Blaze:1},
-  FullMoon:{Lua:1,Rare:15,Night:1},
-  Eclipse:{Sunshine:1,FullMoon:1,Eclipse:1},
-  PureHate:{Rage:50,Blaze:25,Hunter:5}
+  Timing:{TIME:0,Topaz:0,Alt:0,Photon:0},
+  Sunshine:{Sol:0,Rare:0,Blaze:0},
+  FullMoon:{Lua:0,Rare:0,Night:0},
+  Eclipse:{Sunshine:0,FullMoon:0,Eclipse:0},
+  PureHate:{Rage:0,Blaze:0,Hunter:0}
 
 };
 
@@ -3922,6 +3924,34 @@ function getEffectNeeds(){
     Eclipse:{Sunshine:1,FullMoon:1,Eclipse:1},
     PureHate:{Rage:50,Blaze:25,Hunter:5}
   };
+}
+
+/* =========================
+   Craft save migration (fix missing recipe keys in old saves)
+========================= */
+function getDefaultCraftProgress(){
+  const needs = getEffectNeeds();
+  const out = {};
+  for(const eff in needs){
+    out[eff] = {};
+    for(const item in needs[eff]) out[eff][item] = 0;
+  }
+  return out;
+}
+function ensureCraftSaveShape(){
+  const def = getDefaultCraftProgress();
+
+  if(!crafted || typeof crafted !== "object") crafted = {};
+  if(!craftProgress || typeof craftProgress !== "object") craftProgress = {};
+
+  // effects crafted flags
+  for(const eff in def){
+    if(typeof crafted[eff] !== "boolean") crafted[eff] = false;
+    if(!craftProgress[eff] || typeof craftProgress[eff] !== "object") craftProgress[eff] = {};
+    for(const item in def[eff]){
+      if(typeof craftProgress[eff][item] !== "number") craftProgress[eff][item] = 0;
+    }
+  }
 }
 
 function addToCraft(effect){
@@ -5801,35 +5831,6 @@ async function startNullscapeCutscene(){
 
     // Biome schedulers & periodic save
     safe(()=>startBiomeSchedulers());
-
-    // =========================
-    // PLAY-TIME TRACKER (MISSIONS)
-    // Counts real active play time (while tab is visible) and persists via saveGame().
-    // =========================
-    let __lastPlayTick = Date.now();
-    document.addEventListener("visibilitychange", ()=>{ __lastPlayTick = Date.now(); });
-    safe(()=>setInterval(()=>{
-      try{
-        if(document.visibilityState !== "visible") return;
-
-        ensureDailyMissions();
-
-        const now = Date.now();
-        let delta = now - __lastPlayTick;
-        __lastPlayTick = now;
-
-        // clamp unexpected jumps (sleep/resume) so missions don't insta-complete
-        if(delta < 0) delta = 0;
-        if(delta > 5000) delta = 1000;
-
-        dailyPlayMs = (dailyPlayMs || 0) + delta;
-
-        // If missions UI is open, refresh progress + timer label
-        const mo = document.getElementById("missionsOverlay");
-        if(mo && mo.classList.contains("show")) renderMissions();
-      }catch(e){}
-    }, 1000));
-
     safe(()=>setInterval(saveGame, 8000));
 
     // Save on exit/background
