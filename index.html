@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>AN RNG SITE</title>
+<title>An RNG Site +</title>
 
 <style>
 :root{
@@ -75,6 +75,44 @@ body{
   position:relative;
   overflow:hidden;
 }
+/* ===== UI DETAILS (Plus) ===== */
+#app::before{
+  content:"";
+  position:absolute; inset:10px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,0.06);
+  pointer-events:none;
+  z-index:1;
+}
+#app::after{
+  content:"";
+  position:absolute; inset:0;
+  pointer-events:none;
+  z-index:1;
+  background:
+    radial-gradient(circle at 50% 10%, rgba(255,255,255,0.06), rgba(0,0,0,0) 45%),
+    radial-gradient(circle at 50% 90%, rgba(255,255,255,0.05), rgba(0,0,0,0) 55%),
+    linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0) 22%, rgba(0,0,0,0) 78%, rgba(255,255,255,0.02));
+  mix-blend-mode:screen;
+  opacity:0.55;
+}
+#left,#right{ backdrop-filter: blur(0px); }
+#titleWrap{
+  position:relative;
+  padding:6px 12px 8px;
+}
+#titleWrap::after{
+  content:"";
+  position:absolute; left:50%; bottom:0;
+  width:220px; height:1px;
+  transform:translateX(-50%);
+  background:linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.20), rgba(255,255,255,0));
+  opacity:0.55;
+}
+#rollBox{
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03);
+}
+
 
 @media (max-width: 900px){
   body{
@@ -326,6 +364,80 @@ body{
 @keyframes rainFall{
   0%{transform:translate(-2%,-8%);}
   100%{transform:translate(2%,8%);}
+
+/* ===== An RNG Site + BIOMES ===== */
+
+/* Volcanic Abyss: ember pops */
+#app.biomeVolcanicAbyss #biomeFX{
+  background:
+    radial-gradient(circle at 20% 40%, rgba(255,120,0,.06), rgba(0,0,0,0) 55%),
+    radial-gradient(circle at 72% 62%, rgba(255,40,0,.05), rgba(0,0,0,0) 58%),
+    repeating-linear-gradient(125deg,
+      rgba(0,0,0,0) 0px,
+      rgba(0,0,0,0) 22px,
+      rgba(255,120,0,.05) 22px,
+      rgba(255,120,0,.05) 23px
+    );
+  opacity:.22;
+  animation:infernoPops 2.1s ease-in-out infinite;
+  filter:blur(.35px);
+}
+
+/* Deep Space: colder aurora drift */
+#app.biomeDeepSpace #biomeFX{
+  background:
+    radial-gradient(circle at 18% 38%, rgba(0,255,255,.05), rgba(0,0,0,0) 58%),
+    radial-gradient(circle at 75% 62%, rgba(160,80,255,.05), rgba(0,0,0,0) 62%),
+    radial-gradient(circle at 55% 18%, rgba(0,140,255,.04), rgba(0,0,0,0) 55%);
+  opacity:.20;
+  filter:blur(2.2px);
+  animation:auroraDrift 4.6s ease-in-out infinite;
+}
+
+/* Abyss: darker fog pulse */
+#app.biomeAbyss #biomeFX{
+  background:
+    radial-gradient(circle at 50% 55%, rgba(90,44,255,.05), rgba(0,0,0,0) 60%),
+    radial-gradient(circle at 30% 35%, rgba(0,0,0,.55), rgba(0,0,0,0) 62%),
+    radial-gradient(circle at 75% 65%, rgba(0,0,0,.55), rgba(0,0,0,0) 62%);
+  opacity:.18;
+  filter:blur(3px);
+  animation:phantomWisp 1.8s ease-in-out infinite;
+}
+
+/* Bloom Realm: soft green shimmer */
+#app.biomeBloomRealm #biomeFX{
+  background:
+    radial-gradient(circle at 25% 45%, rgba(25,255,154,.05), rgba(0,0,0,0) 60%),
+    radial-gradient(circle at 75% 55%, rgba(0,229,255,.03), rgba(0,0,0,0) 62%),
+    repeating-linear-gradient(90deg,
+      rgba(0,0,0,0) 0px,
+      rgba(0,0,0,0) 28px,
+      rgba(25,255,154,.04) 28px,
+      rgba(25,255,154,.04) 29px
+    );
+  opacity:.16;
+  filter:blur(1.4px);
+  animation:moneyDrift 1.8s linear infinite;
+}
+
+/* Storm Citadel: sharp streaks */
+#app.biomeStormCitadel #biomeFX{
+  background:
+    repeating-linear-gradient(
+      110deg,
+      rgba(255,255,255,0) 0px,
+      rgba(255,255,255,0) 22px,
+      rgba(42,167,255,.06) 22px,
+      rgba(42,167,255,.06) 24px,
+      rgba(255,255,255,0) 24px,
+      rgba(255,255,255,0) 56px
+    );
+  opacity:.18;
+  animation:windPass 1.3s linear infinite;
+  filter:blur(.25px);
+  mask-image: radial-gradient(circle at 50% 55%, rgba(0,0,0,1) 0 58%, rgba(0,0,0,.0) 92%);
+}
 }
 
 /* Zero: invert everything */
@@ -2489,6 +2601,66 @@ body{
   background:rgba(0,0,0,0.25);
 }
 
+
+/* ===== An RNG Site +: category aura visuals (subtle) ===== */
+.cosmicAuraBox{ color:#fff; text-shadow:0 0 10px rgba(80,180,255,.45), 0 0 20px rgba(170,80,255,.25); }
+.cosmicAuraBox::before{
+  content:""; position:absolute; inset:-40%;
+  background:
+    radial-gradient(circle, rgba(255,255,255,.80) 0 1px, transparent 2px) 0 0/22px 22px,
+    radial-gradient(circle, rgba(80,180,255,.45) 0 1px, transparent 2px) 10px 14px/28px 28px;
+  opacity:.25; animation:starsDrift 2.6s linear infinite; pointer-events:none; mix-blend-mode:screen;
+}
+.chaosAuraBox{ color:#fff; text-shadow:0 0 10px rgba(255,120,0,.45), 0 0 18px rgba(255,40,0,.25); overflow:hidden; }
+.chaosAuraBox::before{
+  content:""; position:absolute; inset:-45%;
+  background: repeating-linear-gradient(125deg, rgba(255,120,0,0) 0px, rgba(255,120,0,0) 18px, rgba(255,120,0,.14) 18px, rgba(255,120,0,.14) 20px);
+  opacity:.30; animation:cometFall 1.0s linear infinite; pointer-events:none; mix-blend-mode:screen;
+}
+.shadowAuraBox{ color:#f3eaff; text-shadow:0 0 10px rgba(202,168,255,.35), 0 0 18px rgba(90,44,255,.20); overflow:hidden; }
+.shadowAuraBox::before{
+  content:""; position:absolute; inset:-40%;
+  background: radial-gradient(circle at 40% 45%, rgba(90,44,255,.14), rgba(0,0,0,0) 60%),
+              radial-gradient(circle at 65% 60%, rgba(202,168,255,.10), rgba(0,0,0,0) 62%);
+  opacity:.35; animation:phantomWisp 1.6s ease-in-out infinite; pointer-events:none; mix-blend-mode:screen;
+}
+.natureAuraBox{ color:#eafff8; text-shadow:0 0 10px rgba(25,255,154,.30), 0 0 18px rgba(0,229,255,.16); overflow:hidden; }
+.natureAuraBox::before{
+  content:""; position:absolute; inset:-45%;
+  background: radial-gradient(circle, rgba(25,255,154,.65) 0 1px, transparent 2px) 0 0/24px 24px,
+              radial-gradient(circle, rgba(0,229,255,.45) 0 1px, transparent 2px) 10px 14px/30px 30px;
+  opacity:.20; animation:moneyDrift 1.5s linear infinite; pointer-events:none; mix-blend-mode:screen;
+}
+.divineAuraBox{ color:#fffdf0; text-shadow:0 0 12px rgba(255,214,106,.45), 0 0 22px rgba(255,255,255,.18); overflow:hidden; font-weight:bold; }
+.divineAuraBox::before{
+  content:""; position:absolute; inset:-45%;
+  background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,214,106,.14), rgba(255,255,255,0));
+  opacity:.35; animation:archangelGlow 1.35s ease-in-out infinite; pointer-events:none; mix-blend-mode:screen;
+}
+.glitchAuraBox{ color:#e8f7ff; text-shadow:0 0 10px rgba(0,170,255,.45), 0 0 18px rgba(0,110,255,.20); overflow:hidden; }
+.glitchAuraBox::before{
+  content:""; position:absolute; inset:-30%;
+  background: repeating-linear-gradient(0deg, rgba(0,170,255,0) 0px, rgba(0,170,255,0) 16px, rgba(0,170,255,.14) 16px, rgba(0,170,255,.14) 17px);
+  opacity:.35; animation:webPanels 1.2s ease-in-out infinite; pointer-events:none; mix-blend-mode:screen;
+}
+.mutationAuraBox{ color:#fff; text-shadow:0 0 14px rgba(255,140,0,.25), 0 0 26px rgba(155,48,255,.20), 0 0 32px rgba(0,255,255,.14); overflow:hidden; }
+.mutationAuraBox::before{
+  content:""; position:absolute; inset:-55%;
+  background: conic-gradient(from 130deg, rgba(0,255,255,0), rgba(0,255,255,.12), rgba(170,80,255,.16), rgba(255,120,0,.12), rgba(0,255,255,0));
+  opacity:.35; filter:blur(10px); animation:galaxyArc 1.4s linear infinite; pointer-events:none; mix-blend-mode:screen;
+}
+.anomalyAuraBox{ color:#fff; text-shadow:0 0 16px rgba(255,255,255,.30), 0 0 30px rgba(0,255,240,.18); overflow:hidden; font-weight:900; letter-spacing:1px; }
+.anomalyAuraBox::before{
+  content:""; position:absolute; inset:-60%;
+  background: radial-gradient(circle, rgba(255,255,255,.85) 0 1px, transparent 2px) 0 0/14px 14px,
+              radial-gradient(circle, rgba(0,255,240,.55) 0 1px, transparent 2px) 9px 12px/18px 18px;
+  opacity:.45; animation:sevBugs 420ms linear infinite; pointer-events:none; mix-blend-mode:screen;
+}
+
+/* ===== OFFICIAL CONFIG OVERRIDES (An RNG Site +) ===== */
+#biomeFX{ display:none !important; opacity:0 !important; }
+#layersSweep,#severanceFX,#runHideFX{ display:none !important; opacity:0 !important; }
+#welcomeBack{ display:none !important; opacity:0 !important; }
 </style>
 </head>
 
@@ -2531,8 +2703,8 @@ body{
 
   <div id="center">
     <div id="titleWrap">
-      <div id="title">AN RNG SITE</div>
-      <div id="subtitle">Moving on to something better</div>
+      <div id="title">An RNG Site +</div>
+      <div id="subtitle">The Crown will be mine.</div>
     </div>
 
     <div id="effectEquippedLabel">Effect Equipped: None</div>
@@ -2644,6 +2816,32 @@ body{
       <input id="collectionSearch" type="text" placeholder="Search..." style="width:100%;padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,0.35);background:rgba(0,0,0,0.45);color:#fff;">
     </div>
     <div id="collectionList" class="collectionList"></div>
+    <button id="toggleSettingsBtn" style="width:100%;margin-top:12px;border-radius:14px;border:1px solid white;background:none;color:white;cursor:pointer;padding:8px 10px;">Configurações</button>
+<div id="collectionSettings" style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px;">
+      <div style="opacity:.9;margin-bottom:8px;font-size:12px;color:#cfcfcf;">Configs</div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px;font-size:12px;color:#eaeaea;">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+          <input id="cfgCutscenes" type="checkbox" style="transform:scale(1.05);">
+          Enable Cutscenes
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+          <input id="cfgBiomeFX" type="checkbox" style="transform:scale(1.05);">
+          Enable Biome Visual FX
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+          <input id="cfgWelcomeBack" type="checkbox" style="transform:scale(1.05);">
+          Enable Welcome Back Message
+        </label>
+        <button id="saveConfigsBtn" style="width:100%;border-radius:14px;border:1px solid rgba(255,255,255,0.9);background:none;color:#fff;cursor:pointer;padding:8px 12px;">
+          Save Configs
+        </button>
+      </div>
+
+      <button id="resetGameBtn" style="width:100%;border-radius:14px;border:1px solid #fff;background:none;color:#fff;cursor:pointer;padding:9px 12px;">
+        Reset Game (Delete Save)
+      </button>
+    </div>
+
   </div>
 </div>
 
@@ -2654,6 +2852,29 @@ body{
 
     <div class="overlayPanel" id="logPanel">
       <h2>Update Log</h2>
+
+      <!-- =========================
+           An RNG Site +
+      ========================= -->
+
+<div class="logSection">
+  <h3>An RNG Site + — Total Rework (Patch +)</h3>
+  <ul>
+    <li>Added +300 new auras (expanded pool) and ensured Collection integration.</li>
+    <li>Added 50 new craftable potions (full craft + inventory + active timers).</li>
+    <li>Added 10 new craftable Effects (equip buffs: luck, multi-roll, cooldown, coins, storage).</li>
+    <li>Added +5 new biomes (mechanics only; biome background FX removed by official config).</li>
+    <li>Kept original UI atmosphere/colors, improved clarity and FX layers.</li>
+    <li>Bugfix: fixed JS execution blockers (TDZ / invalid tokens) and improved save compatibility.</li>
+  
+    <li><b>Effects:</b> Added rarity tiers for the new effects (Mythic → Transcendent → Sovereign → Anomaly-tier).</li>
+    <li><b>Admin Panel:</b> Secret CTRL + B + M panel with password access (debug/cheat controls).</li>
+    <li><b>Configs added:</b> player can toggle cutscenes, biome FX, and the welcome back message</li>
+    <li>Inventory now shows aura <b>rarity</b> and aura <b>effect</b> (visual/status).</li>
+    <li>Added <b>Reset Game</b> button under Collection (asks confirmation, deletes save).</li>
+  </ul>
+</div>
+
 
       <!-- =========================
            Update 2 - Moving to something Better (Patch 1.2)
@@ -2785,6 +3006,40 @@ function sfx(type="click"){
 ========================= */
 const SAVE_KEY = "an_rng_site_save_v10_desert_rain_newauras";
 const PLAYER_NAME_KEY = "an_rng_site_player_name_v1";
+const CONFIGS_KEY = "an_rng_site_plus_configs_v1";
+let CONFIGS = { cutscenes:false, biomeFX:false, welcomeBack:false };
+
+function loadConfigs(){
+  try{
+    const raw = localStorage.getItem(CONFIGS_KEY);
+    if(raw){
+      const obj = JSON.parse(raw);
+      if(obj && typeof obj === 'object'){
+        CONFIGS.cutscenes = !!obj.cutscenes;
+        CONFIGS.biomeFX = !!obj.biomeFX;
+        CONFIGS.welcomeBack = !!obj.welcomeBack;
+      }
+    }
+  }catch(e){}
+}
+
+function saveConfigs(){
+  try{ localStorage.setItem(CONFIGS_KEY, JSON.stringify(CONFIGS)); }catch(e){}
+}
+
+function syncConfigsUI(){
+  const c1 = document.getElementById('cfgCutscenes');
+  const c2 = document.getElementById('cfgBiomeFX');
+  const c3 = document.getElementById('cfgWelcomeBack');
+  if(c1) c1.checked = !!CONFIGS.cutscenes;
+  if(c2) c2.checked = !!CONFIGS.biomeFX;
+  if(c3) c3.checked = !!CONFIGS.welcomeBack;
+}
+
+function applyConfigs(){
+  // biome visuals
+  applyBiomeFXClass();
+}
 const RANK_KEY = "an_rng_site_ranking_local_v1";
 let playerName = "";
 function saveGame(){
@@ -2982,6 +3237,258 @@ const aurasData=[
   {name:'Virtual', rarity:1847363, virtual:true, forceBoom:true},
 
   {name:'Distorced', rarity:1581842, distorced:true},
+
+  /* ===== An RNG Site +: 250 new auras ===== */
+  {name:'Nebulon', rarity:138531, cat:'Cosmic'},
+  {name:'Event Horizon', rarity:229639, cat:'Cosmic'},
+  {name:'Void Pulse', rarity:270686, cat:'Cosmic'},
+  {name:'Dark Quasar', rarity:236363, cat:'Cosmic'},
+  {name:'Supercluster', rarity:151720, cat:'Cosmic'},
+  {name:'Star Collapse', rarity:36679, cat:'Cosmic'},
+  {name:'Nova Bloom', rarity:192796, cat:'Cosmic'},
+  {name:'Astral Rift', rarity:127885, cat:'Cosmic'},
+  {name:'Blacklight', rarity:267941, cat:'Cosmic'},
+  {name:'Solar Flareborn', rarity:251219, cat:'Cosmic'},
+  {name:'Galactic Crown', rarity:290847, cat:'Cosmic'},
+  {name:'Orbit Breaker', rarity:254912, cat:'Cosmic'},
+  {name:'Deep Vacuum', rarity:103298, cat:'Cosmic'},
+  {name:'Lunar Shard', rarity:233203, cat:'Cosmic'},
+  {name:'Infinity Halo', rarity:32165, cat:'Cosmic'},
+  {name:'Cometfall', rarity:152118, cat:'Cosmic'},
+  {name:'Celestial Thread', rarity:153634, cat:'Cosmic'},
+  {name:'Moonveil', rarity:75874, cat:'Cosmic'},
+  {name:'Hypernova', rarity:179698, cat:'Cosmic'},
+  {name:'Singularity Edge', rarity:93795, cat:'Cosmic'},
+  {name:'Cosmic Bloom', rarity:203004, cat:'Cosmic'},
+  {name:'Zero Star', rarity:96199, cat:'Cosmic'},
+  {name:'Chronostar', rarity:148544, cat:'Cosmic'},
+  {name:'Dimensional Drift', rarity:137616, cat:'Cosmic'},
+  {name:'Voidheart', rarity:183197, cat:'Cosmic'},
+  {name:'Astral Storm', rarity:299396, cat:'Cosmic'},
+  {name:'Lightpiercer', rarity:81911, cat:'Cosmic'},
+  {name:'Nightflare', rarity:266695, cat:'Cosmic'},
+  {name:'Radiant Collapse', rarity:89899, cat:'Cosmic'},
+  {name:'Dark Spiral', rarity:192667, cat:'Cosmic'},
+  {name:'Quantum Ray', rarity:130147, cat:'Cosmic'},
+  {name:'Stellar Abyss', rarity:161062, cat:'Cosmic'},
+  {name:'Orbital Phantom', rarity:273498, cat:'Cosmic'},
+  {name:'Nebula Crown', rarity:185347, cat:'Cosmic'},
+  {name:'Gravity Shift', rarity:269689, cat:'Cosmic'},
+  {name:'Sky Shatter', rarity:91139, cat:'Cosmic'},
+  {name:'Voidborne', rarity:36804, cat:'Cosmic'},
+  {name:'Celestial Echo', rarity:53668, cat:'Cosmic'},
+  {name:'Infinity Spark', rarity:66968, cat:'Cosmic'},
+  {name:'Supernova Prime', rarity:237356, cat:'Cosmic'},
+  {name:'Overload', rarity:39634, cat:'Chaos'},
+  {name:'Cataclysm', rarity:81805, cat:'Chaos'},
+  {name:'Worldbreaker', rarity:74228, cat:'Chaos'},
+  {name:'Rageborn', rarity:79564, cat:'Chaos'},
+  {name:'Eruption', rarity:22218, cat:'Chaos'},
+  {name:'Feral Pulse', rarity:60034, cat:'Chaos'},
+  {name:'Dominion', rarity:66924, cat:'Chaos'},
+  {name:'Blitzcore', rarity:71574, cat:'Chaos'},
+  {name:'Warcore', rarity:86726, cat:'Chaos'},
+  {name:'Bloodflare', rarity:29871, cat:'Chaos'},
+  {name:'Annihilator', rarity:56619, cat:'Chaos'},
+  {name:'Power Surge', rarity:23965, cat:'Chaos'},
+  {name:'Titanfall', rarity:25781, cat:'Chaos'},
+  {name:'Stormrage', rarity:9019, cat:'Chaos'},
+  {name:'Doomflare', rarity:8578, cat:'Chaos'},
+  {name:'Infernal King', rarity:32388, cat:'Chaos'},
+  {name:'Hellburst', rarity:89089, cat:'Chaos'},
+  {name:'Overheat', rarity:67626, cat:'Chaos'},
+  {name:'Pulsebreaker', rarity:68135, cat:'Chaos'},
+  {name:'Flarefang', rarity:73349, cat:'Chaos'},
+  {name:'Wrathcore', rarity:32994, cat:'Chaos'},
+  {name:'Chaos Bloom', rarity:43486, cat:'Chaos'},
+  {name:'Execution', rarity:46199, cat:'Chaos'},
+  {name:'Crimson Rift', rarity:49306, cat:'Chaos'},
+  {name:'Savage Edge', rarity:55367, cat:'Chaos'},
+  {name:'Destruction Field', rarity:13538, cat:'Chaos'},
+  {name:'Ashen Core', rarity:36606, cat:'Chaos'},
+  {name:'Oblivion', rarity:33090, cat:'Chaos'},
+  {name:'Forcewave', rarity:8831, cat:'Chaos'},
+  {name:'Final Spark', rarity:36731, cat:'Chaos'},
+  {name:'Overlord', rarity:82417, cat:'Chaos'},
+  {name:'Rampage', rarity:47918, cat:'Chaos'},
+  {name:'Emberstorm', rarity:15012, cat:'Chaos'},
+  {name:'Shockcore', rarity:57844, cat:'Chaos'},
+  {name:'War Pulse', rarity:64208, cat:'Chaos'},
+  {name:'Blastwave', rarity:86172, cat:'Chaos'},
+  {name:'Flare Overload', rarity:81228, cat:'Chaos'},
+  {name:'Bloodstorm', rarity:56163, cat:'Chaos'},
+  {name:'Clashborn', rarity:51344, cat:'Chaos'},
+  {name:'Chaos Prime', rarity:21224, cat:'Chaos'},
+  {name:'Phantom Crown', rarity:85467, cat:'Shadow'},
+  {name:'Night Whisper', rarity:33623, cat:'Shadow'},
+  {name:'Ethereal Drift', rarity:75170, cat:'Shadow'},
+  {name:'Void Shade', rarity:32570, cat:'Shadow'},
+  {name:'Silent Veil', rarity:86930, cat:'Shadow'},
+  {name:'Shadow Bloom', rarity:38760, cat:'Shadow'},
+  {name:'Grim Pulse', rarity:46041, cat:'Shadow'},
+  {name:'Afterimage', rarity:16392, cat:'Shadow'},
+  {name:'Dark Mirage', rarity:56471, cat:'Shadow'},
+  {name:'Soul Flicker', rarity:58482, cat:'Shadow'},
+  {name:'Obscura', rarity:6292, cat:'Shadow'},
+  {name:'Nightfall', rarity:79775, cat:'Shadow'},
+  {name:'Abyss Thread', rarity:84198, cat:'Shadow'},
+  {name:'Wraith', rarity:14989, cat:'Shadow'},
+  {name:'Hollow Light', rarity:56468, cat:'Shadow'},
+  {name:'Grave Echo', rarity:85172, cat:'Shadow'},
+  {name:'Midnight Pulse', rarity:44112, cat:'Shadow'},
+  {name:'Umbral Core', rarity:66955, cat:'Shadow'},
+  {name:'Shadeflare', rarity:70555, cat:'Shadow'},
+  {name:'Ghostlight', rarity:48480, cat:'Shadow'},
+  {name:'Black Veil', rarity:39196, cat:'Shadow'},
+  {name:'Spectral Rift', rarity:63796, cat:'Shadow'},
+  {name:'Silent Nova', rarity:6243, cat:'Shadow'},
+  {name:'Dark Pulse', rarity:81676, cat:'Shadow'},
+  {name:'Faded Star', rarity:25596, cat:'Shadow'},
+  {name:'Hollow Crown', rarity:80229, cat:'Shadow'},
+  {name:'Twilight Rift', rarity:52147, cat:'Shadow'},
+  {name:'Void Dancer', rarity:19517, cat:'Shadow'},
+  {name:'Shadefall', rarity:42625, cat:'Shadow'},
+  {name:'Lost Memory', rarity:59770, cat:'Shadow'},
+  {name:'Forgotten', rarity:13243, cat:'Shadow'},
+  {name:'Null Echo', rarity:41686, cat:'Shadow'},
+  {name:'Phantom Edge', rarity:81442, cat:'Shadow'},
+  {name:'Silent Collapse', rarity:6567, cat:'Shadow'},
+  {name:'Dark Bloom', rarity:75254, cat:'Shadow'},
+  {name:'Black Halo', rarity:32191, cat:'Shadow'},
+  {name:'Ghostflare', rarity:76689, cat:'Shadow'},
+  {name:'Aftershock', rarity:9941, cat:'Shadow'},
+  {name:'Deadlight', rarity:85597, cat:'Shadow'},
+  {name:'Unknown Prime', rarity:51349, cat:'Shadow'},
+  {name:'Tempest', rarity:31991, cat:'Nature'},
+  {name:'Sandstorm', rarity:23059, cat:'Nature'},
+  {name:'Wildgrowth', rarity:30127, cat:'Nature'},
+  {name:'Tidal Bloom', rarity:34383, cat:'Nature'},
+  {name:'Thunderpetal', rarity:18466, cat:'Nature'},
+  {name:'Stormvine', rarity:19217, cat:'Nature'},
+  {name:'Earthcore', rarity:34169, cat:'Nature'},
+  {name:'Frostbloom', rarity:3339, cat:'Nature'},
+  {name:'Leafstorm', rarity:26067, cat:'Nature'},
+  {name:'Gale Edge', rarity:17938, cat:'Nature'},
+  {name:'Vinepulse', rarity:20455, cat:'Nature'},
+  {name:'Floral Surge', rarity:2592, cat:'Nature'},
+  {name:'Rootflare', rarity:1835, cat:'Nature'},
+  {name:'Crystal Rain', rarity:2053, cat:'Nature'},
+  {name:'Raincaller', rarity:18546, cat:'Nature'},
+  {name:'Dustborn', rarity:21117, cat:'Nature'},
+  {name:'Wild Rift', rarity:16683, cat:'Nature'},
+  {name:'Tsunami Pulse', rarity:28169, cat:'Nature'},
+  {name:'Snowfall', rarity:18348, cat:'Nature'},
+  {name:'Blossom Rift', rarity:29627, cat:'Nature'},
+  {name:'Windlash', rarity:11904, cat:'Nature'},
+  {name:'Stoneheart', rarity:5975, cat:'Nature'},
+  {name:'Naturebound', rarity:31837, cat:'Nature'},
+  {name:'Oceanflare', rarity:21221, cat:'Nature'},
+  {name:'Forest Echo', rarity:23646, cat:'Nature'},
+  {name:'Bloom Prime', rarity:26699, cat:'Nature'},
+  {name:'Stormveil', rarity:9318, cat:'Nature'},
+  {name:'Rockfall', rarity:24620, cat:'Nature'},
+  {name:'Petalburst', rarity:17364, cat:'Nature'},
+  {name:'Drizzlecore', rarity:15120, cat:'Nature'},
+  {name:'Mistcaller', rarity:20269, cat:'Nature'},
+  {name:'Leaflight', rarity:5930, cat:'Nature'},
+  {name:'Deepwave', rarity:10948, cat:'Nature'},
+  {name:'Frostveil', rarity:34928, cat:'Nature'},
+  {name:'Verdant Crown', rarity:5715, cat:'Nature'},
+  {name:'Thornpulse', rarity:10148, cat:'Nature'},
+  {name:'Wild Nova', rarity:19286, cat:'Nature'},
+  {name:'Nature’s Wrath', rarity:31948, cat:'Nature'},
+  {name:'Seabloom', rarity:23330, cat:'Nature'},
+  {name:'Tempest Prime', rarity:6308, cat:'Nature'},
+  {name:'Archlight', rarity:56196, cat:'Divine'},
+  {name:'Celestia', rarity:100797, cat:'Divine'},
+  {name:'Halo Burst', rarity:58517, cat:'Divine'},
+  {name:'Divine Edge', rarity:80142, cat:'Divine'},
+  {name:'Heavenfall', rarity:88695, cat:'Divine'},
+  {name:'Sacred Bloom', rarity:204222, cat:'Divine'},
+  {name:'Radiant King', rarity:176383, cat:'Divine'},
+  {name:'Luminary', rarity:246233, cat:'Divine'},
+  {name:'Angelic Pulse', rarity:203408, cat:'Divine'},
+  {name:'Holy Nova', rarity:247023, cat:'Divine'},
+  {name:'Seraph Crown', rarity:219837, cat:'Divine'},
+  {name:'Divine Rift', rarity:218586, cat:'Divine'},
+  {name:'Heavenflare', rarity:70011, cat:'Divine'},
+  {name:'Sanctified', rarity:235101, cat:'Divine'},
+  {name:'Blessed Core', rarity:104610, cat:'Divine'},
+  {name:'Lightveil', rarity:89983, cat:'Divine'},
+  {name:'Sunshard', rarity:174887, cat:'Divine'},
+  {name:'Gloryfall', rarity:231615, cat:'Divine'},
+  {name:'Divine Bloom', rarity:68812, cat:'Divine'},
+  {name:'Radiant Veil', rarity:78539, cat:'Divine'},
+  {name:'Seraphim', rarity:248897, cat:'Divine'},
+  {name:'Golden Halo', rarity:142840, cat:'Divine'},
+  {name:'Heaven Prime', rarity:200260, cat:'Divine'},
+  {name:'Celestial King', rarity:222805, cat:'Divine'},
+  {name:'Sacred Nova', rarity:184596, cat:'Divine'},
+  {name:'Lightborn', rarity:116229, cat:'Divine'},
+  {name:'Blessing Storm', rarity:82659, cat:'Divine'},
+  {name:'Divinity', rarity:189551, cat:'Divine'},
+  {name:'Whiteflare', rarity:85854, cat:'Divine'},
+  {name:'Holy Rift', rarity:117510, cat:'Divine'},
+  {name:'Sanctum', rarity:218807, cat:'Divine'},
+  {name:'Lightfall', rarity:91395, cat:'Divine'},
+  {name:'Eternal Light', rarity:248957, cat:'Divine'},
+  {name:'Divine Pulse', rarity:219610, cat:'Divine'},
+  {name:'Holy Crown', rarity:158784, cat:'Divine'},
+  {name:'Lumina', rarity:109320, cat:'Divine'},
+  {name:'Godspark', rarity:158383, cat:'Divine'},
+  {name:'Radiant Bloom+', rarity:130763, cat:'Divine'},
+  {name:'Gold Rift+', rarity:104207, cat:'Divine'},
+  {name:'Seraph Prime', rarity:135948, cat:'Divine'},
+  {name:'Corrupt.exe', rarity:45261, cat:'Glitch'},
+  {name:'Glitchwave', rarity:9426, cat:'Glitch'},
+  {name:'Error404', rarity:103211, cat:'Glitch'},
+  {name:'System Break', rarity:73859, cat:'Glitch'},
+  {name:'Datastream', rarity:85944, cat:'Glitch'},
+  {name:'Code Rift', rarity:103109, cat:'Glitch'},
+  {name:'Binary Pulse', rarity:71092, cat:'Glitch'},
+  {name:'Firewall', rarity:90679, cat:'Glitch'},
+  {name:'Lagstorm', rarity:108111, cat:'Glitch'},
+  {name:'Pixel Collapse', rarity:8109, cat:'Glitch'},
+  {name:'Nullbyte', rarity:80952, cat:'Glitch'},
+  {name:'Scripted Fate', rarity:91369, cat:'Glitch'},
+  {name:'Bitstorm', rarity:114513, cat:'Glitch'},
+  {name:'Kernel Panic', rarity:28981, cat:'Glitch'},
+  {name:'Overclock', rarity:38748, cat:'Glitch'},
+  {name:'Fragment', rarity:40061, cat:'Glitch'},
+  {name:'Debug Mode', rarity:75815, cat:'Glitch'},
+  {name:'Stack Overflow', rarity:86499, cat:'Glitch'},
+  {name:'Recompile', rarity:23673, cat:'Glitch'},
+  {name:'Archive', rarity:53077, cat:'Glitch'},
+  {name:'Data Surge', rarity:21688, cat:'Glitch'},
+  {name:'Memory Leak', rarity:101125, cat:'Glitch'},
+  {name:'Hard Reset', rarity:31311, cat:'Glitch'},
+  {name:'Protocol', rarity:10138, cat:'Glitch'},
+  {name:'Digital Rift', rarity:61295, cat:'Glitch'},
+  {name:'System Prime', rarity:24493, cat:'Glitch'},
+  {name:'Ghostcode', rarity:109083, cat:'Glitch'},
+  {name:'Matrix Bloom', rarity:83141, cat:'Glitch'},
+  {name:'Overload.exe', rarity:116292, cat:'Glitch'},
+  {name:'Packet Storm', rarity:57860, cat:'Glitch'},
+  {name:'Blue Screen', rarity:47935, cat:'Glitch'},
+  {name:'Virusflare', rarity:60043, cat:'Glitch'},
+  {name:'Core Dump', rarity:61961, cat:'Glitch'},
+  {name:'Latency', rarity:51047, cat:'Glitch'},
+  {name:'Corruption Bloom', rarity:12646, cat:'Glitch'},
+  {name:'Error Pulse', rarity:15241, cat:'Glitch'},
+  {name:'Binary Bloom', rarity:66545, cat:'Glitch'},
+  {name:'Hexstorm', rarity:19166, cat:'Glitch'},
+  {name:'System Collapse', rarity:31921, cat:'Glitch'},
+  {name:'Admin', rarity:94575, cat:'Glitch'},
+  {name:'Eclipse Nova', rarity:707966, cat:'Mutation'},
+  {name:'Dualflare', rarity:428025, cat:'Mutation'},
+  {name:'Crimson Halo', rarity:487880, cat:'Mutation'},
+  {name:'Void Angel', rarity:214933, cat:'Mutation'},
+  {name:'Celestial Void', rarity:226702, cat:'Mutation'},
+  {name:'Shadowflare', rarity:629586, cat:'Mutation'},
+  {name:'Glory Void', rarity:67853, cat:'Mutation'},
+  {name:'Divine Eclipse', rarity:261340, cat:'Mutation'},
+  {name:'Quantum Bloom', rarity:381699, cat:'Mutation'},
+  {name:'Hyper Angel', rarity:372927, cat:'Mutation'},
 ];
 
 const zeroAurasData = [
@@ -3026,6 +3533,81 @@ const windstormAurasData = [
   {name:'Air', rarity:25, air:true},
 ];
 
+// ===== An RNG Site +: Volcanic Abyss exclusive auras =====
+const volcanicAbyssAurasData = [
+  {name:'Magma King', rarity:14490, cat:'Chaos', biome:'Volcanic Abyss'},
+  {name:'Lava Eclipse', rarity:53749, cat:'Chaos', biome:'Volcanic Abyss'},
+  {name:'Ash Tyrant', rarity:66141, cat:'Chaos', biome:'Volcanic Abyss'},
+  {name:'Cinder Crown', rarity:67794, cat:'Chaos', biome:'Volcanic Abyss'},
+  {name:'Basalt Heart', rarity:33424, cat:'Chaos', biome:'Volcanic Abyss'},
+  {name:'Inferno Bloom', rarity:45042, cat:'Chaos', biome:'Volcanic Abyss'},
+  {name:'Molten Rift', rarity:15700, cat:'Chaos', biome:'Volcanic Abyss'},
+  {name:'Pyro Seraph', rarity:14206, cat:'Chaos', biome:'Volcanic Abyss'},
+  {name:'Obsidian Halo', rarity:16823, cat:'Chaos', biome:'Volcanic Abyss'},
+  {name:'Volcanic Prime', rarity:13592, cat:'Chaos', biome:'Volcanic Abyss'},
+];
+
+// ===== An RNG Site +: Deep Space exclusive auras =====
+const deepSpaceAurasData = [
+  {name:'Star Tyrant', rarity:65195, cat:'Cosmic', biome:'Deep Space'},
+  {name:'Void Supernova', rarity:75203, cat:'Cosmic', biome:'Deep Space'},
+  {name:'Nebula Emperor', rarity:74998, cat:'Cosmic', biome:'Deep Space'},
+  {name:'Dark Orbit', rarity:51584, cat:'Cosmic', biome:'Deep Space'},
+  {name:'Quasar Crown', rarity:98867, cat:'Cosmic', biome:'Deep Space'},
+  {name:'Astro Rift', rarity:235712, cat:'Cosmic', biome:'Deep Space'},
+  {name:'Cosmic Thread', rarity:38420, cat:'Cosmic', biome:'Deep Space'},
+  {name:'Starlight Null', rarity:215888, cat:'Cosmic', biome:'Deep Space'},
+  {name:'Gravity Monarch', rarity:216770, cat:'Cosmic', biome:'Deep Space'},
+  {name:'Deep Space Prime', rarity:209213, cat:'Cosmic', biome:'Deep Space'},
+];
+
+// ===== An RNG Site +: Abyss exclusive auras =====
+const abyssAurasData = [
+  {name:'Abyss Lord', rarity:21656, cat:'Shadow', biome:'Abyss'},
+  {name:'Eternal Dark', rarity:83332, cat:'Shadow', biome:'Abyss'},
+  {name:'Hollow Emperor', rarity:71457, cat:'Shadow', biome:'Abyss'},
+  {name:'Black Tide', rarity:40449, cat:'Shadow', biome:'Abyss'},
+  {name:'Grim Singularity', rarity:43775, cat:'Shadow', biome:'Abyss'},
+  {name:'Umbral Monarch', rarity:12586, cat:'Shadow', biome:'Abyss'},
+  {name:'Void Warden', rarity:12560, cat:'Shadow', biome:'Abyss'},
+  {name:'Silent Abyss', rarity:76982, cat:'Shadow', biome:'Abyss'},
+  {name:'Night Sovereign', rarity:30461, cat:'Shadow', biome:'Abyss'},
+  {name:'Abyss Prime', rarity:86349, cat:'Shadow', biome:'Abyss'},
+];
+
+// ===== An RNG Site +: Bloom Realm exclusive auras =====
+const bloomRealmAurasData = [
+  {name:'Blossom Queen', rarity:22450, cat:'Nature', biome:'Bloom Realm'},
+  {name:'Wild Prime', rarity:17436, cat:'Nature', biome:'Bloom Realm'},
+  {name:'Petal Empress', rarity:21141, cat:'Nature', biome:'Bloom Realm'},
+  {name:'Verdant Halo', rarity:12626, cat:'Nature', biome:'Bloom Realm'},
+  {name:'Flora Seraph', rarity:13861, cat:'Nature', biome:'Bloom Realm'},
+  {name:'Bloom Dominion', rarity:6935, cat:'Nature', biome:'Bloom Realm'},
+  {name:'Nature Crown', rarity:9966, cat:'Nature', biome:'Bloom Realm'},
+  {name:'Vine Monarch', rarity:23630, cat:'Nature', biome:'Bloom Realm'},
+  {name:'Garden Eclipse', rarity:8871, cat:'Nature', biome:'Bloom Realm'},
+  {name:'Bloom Realm Prime', rarity:5932, cat:'Nature', biome:'Bloom Realm'},
+];
+
+// ===== An RNG Site +: Storm Citadel exclusive auras =====
+const stormCitadelAurasData = [
+  {name:'Thunder King', rarity:14490, cat:'Chaos', biome:'Storm Citadel'},
+  {name:'Storm God', rarity:53749, cat:'Chaos', biome:'Storm Citadel'},
+  {name:'Skybreaker', rarity:66141, cat:'Chaos', biome:'Storm Citadel'},
+  {name:'Tempest Crown', rarity:67794, cat:'Chaos', biome:'Storm Citadel'},
+  {name:'Lightning Seraph', rarity:33424, cat:'Chaos', biome:'Storm Citadel'},
+  {name:'Storm Dominion', rarity:45042, cat:'Chaos', biome:'Storm Citadel'},
+  {name:'Bolt Emperor', rarity:15700, cat:'Chaos', biome:'Storm Citadel'},
+  {name:'Cyclone Halo', rarity:14206, cat:'Chaos', biome:'Storm Citadel'},
+  {name:'Storm Rift', rarity:16823, cat:'Chaos', biome:'Storm Citadel'},
+  {name:'Storm Citadel Prime', rarity:13592, cat:'Chaos', biome:'Storm Citadel'},
+];
+
+// ===== An RNG Site +: Anomaly aura =====
+const anomalyAurasData = [
+  {name:'Anomaly', rarity:2500000, cat:'Anomaly'},
+];
+
 /* Glitch biome exclusive auras */
 const glitchAurasData = [
   {name:'Bug', rarity:(TEST_MODE?1:5000), bug:true}
@@ -3036,8 +3618,7 @@ const glitchAurasData = [
    STATE
 ========================= */
 let rolling=[], storage=[], effects=[], crafted={
-
-  Windstorm:false,
+Windstorm:false,
   Lumi:false,
   CometBlessing:false,
   GalaxySpace:false,
@@ -3048,11 +3629,21 @@ let rolling=[], storage=[], effects=[], crafted={
   Sunshine:false,
   FullMoon:false,
   Eclipse:false,
-  PureHate:false
+  PureHate:false,
+  VolcanicCore:false,
+  DeepSpaceDrift:false,
+  AbyssalVeil:false,
+  BloomingGrace:false,
+  StormCircuit:false,
+  ChronoLatch:false,
+  MerchantMoon:false,
+  AnomalyLens:false,
+  CollectorInstinct:false,
+  SplitReality:false
 };
 
 let craftProgress={
-  Windstorm:{Common:0,Incommun:0,Windy:0,Windstorm:0},
+Windstorm:{Common:0,Incommun:0,Windy:0,Windstorm:0},
   Lumi:{Light:0,Common:0,Incommun:0},
 
   CometBlessing:{Comet:0, Light:0, Windstorm:0},
@@ -3070,7 +3661,17 @@ let craftProgress={
   Sunshine:{Sol:0,Rare:0,Blaze:0},
   FullMoon:{Lua:0,Rare:0,Night:0},
   Eclipse:{Sunshine:0,FullMoon:0,Eclipse:0},
-  PureHate:{Rage:0,Blaze:0,Hunter:0}
+  PureHate:{Rage:0,Blaze:0,Hunter:0},
+  VolcanicCore:{'Magma':3,'Blaze':120,'Rage':200,'Ashen Core':60},
+  DeepSpaceDrift:{'Event Horizon':2,'Void Pulse':80,'Supercluster':2,'Singularity Edge':40},
+  AbyssalVeil:{'Abyssal':2,'Wraith':90,'Nightfall':120,'Umbral Core':35},
+  BloomingGrace:{'Bloom Prime':2,'Wildgrowth':150,'Sacred Bloom':80,'Lightveil':60},
+  StormCircuit:{'Tempest':2,'Stormveil':90,'Windlash':140,'Photon':80},
+  ChronoLatch:{'Overture':2,'Chronostar':2,'TIME':25,'Dimensional Drift':80},
+  MerchantMoon:{'Money':2,'Worth':300,'Topaz':90,'Lua':2},
+  AnomalyLens:{'System Prime':2,'Corrupt.exe':2,'Error404':120,'Nullbyte':200},
+  CollectorInstinct:{'Archive':2,'Protocol':80,'Datastream':120,'Fragment':200},
+  SplitReality:{'Astral Rift':120,'Code Rift':120,'Digital Rift':120,'Divine Rift':2}
 
 };
 
@@ -3096,8 +3697,10 @@ function applyBiomeFXClass(){
   app.classList.remove(
     'biomeOn',
     'biomeInferno','biomeWindstorm','biomeSky','biomeZero','biomeAurora',
-    'biomeDesert','biomeRain','biomeGlitch'
+    'biomeDesert','biomeRain','biomeGlitch','biomeVolcanicAbyss','biomeDeepSpace','biomeAbyss','biomeBloomRealm','biomeStormCitadel'
   );
+
+  if(!CONFIGS || !CONFIGS.biomeFX){ return; }
 
   if(isBiomeActive() && currentBiome !== 'Natural'){
     app.classList.add('biomeOn');
@@ -3110,11 +3713,19 @@ function applyBiomeFXClass(){
     if(currentBiome === 'Desert') app.classList.add('biomeDesert');
     if(currentBiome === 'Rain') app.classList.add('biomeRain');
     if(currentBiome === 'Glitch') app.classList.add('biomeGlitch');
+    if(currentBiome === 'Volcanic Abyss') app.classList.add('biomeVolcanicAbyss');
+    if(currentBiome === 'Deep Space') app.classList.add('biomeDeepSpace');
+    if(currentBiome === 'Abyss') app.classList.add('biomeAbyss');
+    if(currentBiome === 'Bloom Realm') app.classList.add('biomeBloomRealm');
+    if(currentBiome === 'Storm Citadel') app.classList.add('biomeStormCitadel');
   }
 }
 
 function setBiome(name, durationMs){
-  currentBiome = name;
+  
+  // biome FX disabled by official config
+  const _app=document.getElementById("app"); if(_app){ _app.classList.remove("biomeOn"); }
+currentBiome = name;
   // daily explore tracking
 ensureDailyMissions();
 if(name === "Desert") dailyExplored.Desert = true;
@@ -3200,6 +3811,13 @@ const BIOME_RULES = [
   {name:'Rain', interval:30000, chance:0.20, duration:90000},     // NEW
   {name:'Windstorm', interval:30000, chance:0.18, duration:90000},
   {name:'Inferno', interval:30000, chance:0.16, duration:90000},
+
+
+  {name:'Storm Citadel', interval:30000, chance:0.12, duration:90000},  // An RNG Site +
+  {name:'Volcanic Abyss', interval:30000, chance:0.10, duration:90000}, // An RNG Site +
+  {name:'Deep Space', interval:30000, chance:0.10, duration:90000},     // An RNG Site +
+  {name:'Abyss', interval:30000, chance:0.09, duration:90000},          // An RNG Site +
+  {name:'Bloom Realm', interval:30000, chance:0.09, duration:90000},    // An RNG Site +
 
   {name:'Chrono', interval:60000, chance:0.08, duration:90000},
 ];
@@ -3412,6 +4030,10 @@ function colorExplosion(durationMs=650){
    No-cutscene stubs (keep old roll branches working)
 ========================= */
 function _stubCutscene(cb, ms=720){
+  if(!CONFIGS || !CONFIGS.cutscenes){
+    try{ if(typeof cb === 'function') cb(); }catch(e){}
+    return Promise.resolve();
+  }
   return colorExplosion(ms).then(()=>{ if(typeof cb === 'function') cb(); });
 }
 function startNullscapeCutscene(cb){ return _stubCutscene(cb, 900); }
@@ -3712,6 +4334,25 @@ function renderAuraBox(div, aura){
     return;
   }
 
+  
+  // An RNG Site + category visuals
+  if(aura.cat){
+    const map = {
+      'Cosmic':'cosmicAuraBox',
+      'Chaos':'chaosAuraBox',
+      'Shadow':'shadowAuraBox',
+      'Nature':'natureAuraBox',
+      'Divine':'divineAuraBox',
+      'Glitch':'glitchAuraBox',
+      'Mutation':'mutationAuraBox',
+      'Anomaly':'anomalyAuraBox',
+    };
+    const cls = map[aura.cat];
+    if(cls) div.classList.add(cls);
+    div.innerText = aura.name;
+    return;
+  }
+
   div.innerText=aura.name;
 }
 
@@ -3721,7 +4362,17 @@ function refreshRolling(){
   rolling.slice(start).forEach((a,i)=>{
     const d=document.createElement('div');
     renderAuraBox(d,a);
-    d.title = "Click to move to Storage";
+    
+    // inventory meta (rarity + effect)
+    const meta = document.createElement('div');
+    meta.style.marginTop = '6px';
+    meta.style.fontSize = '11px';
+    meta.style.color = '#cfcfcf';
+    const rr = formatRarity(a);
+    const eff = getAuraEffectText(a);
+    meta.textContent = rr || "";
+    d.appendChild(meta);
+d.title = "Click to move to Storage";
     d.onclick=()=>moveToStorage(start+i);
     el.appendChild(d);
   });
@@ -3800,6 +4451,7 @@ function floatCoins(amount){
 /* NEW: Rain biome gives storage cost 25 (discount) */
 function storageSlotCost(){
   if(currentBiome === 'Rain' && isBiomeActive()) return 25;
+  if(effects.includes('MerchantMoon')) return 15;
   return (effects.includes('FullMoon')||effects.includes('Eclipse'))?25:50;
 }
 
@@ -3874,8 +4526,20 @@ function getVisibleLuckPercent(){
 if(luckyActive) pct += 100;
   if(hunterPotionActive) pct += 350;
 
+  
+  if(effects.includes('VolcanicCore')) pct += 1800;
+  if(effects.includes('DeepSpaceDrift')) pct += 2000;
+  if(effects.includes('AbyssalVeil')) pct += 2500;
+  if(effects.includes('BloomingGrace')) pct += 2600;
+  if(effects.includes('StormCircuit')) pct += 2800;
+  if(effects.includes('ChronoLatch')) pct += 3200;
+  if(effects.includes('MerchantMoon')) pct += 3500;
+  if(effects.includes('AnomalyLens')) pct += 4000;
+  if(effects.includes('CollectorInstinct')) pct += 4500;
+  if(effects.includes('SplitReality')) pct += 6000;
   return pct;
 }
+
 function updateCurrentLuckUI(extraMultiplier=1){
   const pct = getVisibleLuckPercent();
   const mult = 1 + (pct / 100);
@@ -3888,7 +4552,7 @@ function updateCurrentLuckUI(extraMultiplier=1){
    EFFECTS
 ========================= */
 const allEffects = [
-  'Windstorm',
+'Windstorm',
   'Lumi',
   'CometBlessing',
   'GalaxySpace',
@@ -3899,8 +4563,46 @@ const allEffects = [
   'Sunshine',
   'FullMoon',
   'Eclipse',
-  'PureHate'
+  'PureHate',
+  'VolcanicCore',
+  'DeepSpaceDrift',
+  'AbyssalVeil',
+  'BloomingGrace',
+  'StormCircuit',
+  'ChronoLatch',
+  'MerchantMoon',
+  'AnomalyLens',
+  'CollectorInstinct',
+  'SplitReality'
 ];
+// Effect rarities (An RNG Site +)
+const effectRarity = {
+  Windstorm:"Common",
+  Lumi:"Uncommon",
+  CometBlessing:"Rare",
+  GalaxySpace:"Epic",
+  UniverseBreaths:"Legendary",
+  ColorMadness:"Legendary",
+  ImpactFrame:"Mythic",
+  Timing:"Rare",
+  Sunshine:"Epic",
+  FullMoon:"Epic",
+  Eclipse:"Legendary",
+  PureHate:"Mythic",
+
+  // New Effects (stronger than ColorMadness tiering)
+  VolcanicCore:"Mythic",
+  DeepSpaceDrift:"Mythic",
+  AbyssalVeil:"Transcendent",
+  BloomingGrace:"Transcendent",
+  StormCircuit:"Transcendent",
+  ChronoLatch:"Sovereign",
+  MerchantMoon:"Sovereign",
+  AnomalyLens:"Sovereign",
+  CollectorInstinct:"Sovereign",
+  SplitReality:"Anomaly-tier"
+};
+
 
 function equipEffect(e){
   let maxEffects=(effects.includes('Sunshine')||effects.includes('Eclipse'))?3:2;
@@ -3918,7 +4620,7 @@ function updateEquipped(){
 
 function getEffectNeeds(){
   return {
-    Windstorm:{Common:5,Incommun:1,Windy:3,Windstorm:1},
+Windstorm:{Common:5,Incommun:1,Windy:3,Windstorm:1},
     Lumi:{Light:1,Common:25,Incommun:15},
 
     CometBlessing:{Comet:1, Light:5, Windstorm:50},
@@ -3937,8 +4639,20 @@ function getEffectNeeds(){
     FullMoon:{Lua:1,Rare:15,Night:1},
     Eclipse:{Sunshine:1,FullMoon:1,Eclipse:1},
     PureHate:{Rage:50,Blaze:25,Hunter:5}
+    ,
+    VolcanicCore:{'Magma':1,'Blaze':10,'Rage':25,'Ashen Core':5},
+    DeepSpaceDrift:{'Event Horizon':1,'Void Pulse':5,'Supercluster':1,'Singularity Edge':3},
+    AbyssalVeil:{'Abyssal':1,'Wraith':5,'Nightfall':10,'Umbral Core':3},
+    BloomingGrace:{'Bloom Prime':1,'Wildgrowth':10,'Sacred Bloom':5,'Lightveil':3},
+    StormCircuit:{'Tempest':1,'Stormveil':5,'Windlash':10,'Photon':5},
+    ChronoLatch:{'Overture':1,'Chronostar':1,'TIME':3,'Dimensional Drift':5},
+    MerchantMoon:{'Money':1,'Worth':25,'Topaz':5,'Lua':1},
+    AnomalyLens:{'System Prime':1,'Corrupt.exe':1,'Error404':5,'Nullbyte':10},
+    CollectorInstinct:{'Archive':1,'Protocol':3,'Datastream':5,'Fragment':10},
+    SplitReality:{'Astral Rift':5,'Code Rift':5,'Digital Rift':5,'Divine Rift':1}
   };
 }
+
 
 function addToCraft(effect){
   const needs = getEffectNeeds();
@@ -4025,6 +4739,8 @@ function renderEffects(){
 
   allEffects.forEach(effect=>{
     let html=`<b>${effect}</b>`;
+    const r = (effectRarity && effectRarity[effect]) ? effectRarity[effect] : '—';
+    html+=`<div style="font-size:11px;opacity:.82;letter-spacing:.4px;margin-top:2px;">Rarity: ${r}</div>`;
     switch(effect){
       case 'ColorMadness': html+=`<br>+1100% Luck<br>+50% Roll Speed`; break;
       case 'Windstorm': html+=`<br>+50% Luck<br>-10% Roll Speed`; break;
@@ -4038,6 +4754,18 @@ function renderEffects(){
       case 'FullMoon': html+=`<br>Storage discount, storage cost 25 coins`; break;
       case 'Eclipse': html+=`<br>Combine Sunshine + Full Moon benefits`; break;
       case 'PureHate': html+=`<br>+35%: 2 auras<br>+15%: 3 auras`; break;
+
+      case 'VolcanicCore': html+=`<br>+1800% Luck<br>+20% Roll Speed<br>+10%: +1 Aura`; break;
+      case 'DeepSpaceDrift': html+=`<br>+2000% Luck<br>+25% Roll Speed`; break;
+      case 'AbyssalVeil': html+=`<br>+2500% Luck<br>+30% Roll Speed`; break;
+      case 'BloomingGrace': html+=`<br>+2600% Luck<br>+35% Roll Speed`; break;
+      case 'StormCircuit': html+=`<br>+2800% Luck<br>+40% Roll Speed`; break;
+      case 'ChronoLatch': html+=`<br>+3200% Luck<br>+50% Roll Speed`; break;
+      case 'MerchantMoon': html+=`<br>+3500% Luck<br>+60% Roll Speed<br>+50% coins/roll`; break;
+      case 'AnomalyLens': html+=`<br>+4000% Luck<br>+80% Roll Speed`; break;
+      case 'CollectorInstinct': html+=`<br>+4500% Luck<br>+100% Roll Speed<br>+2 coins/roll`; break;
+      case 'SplitReality': html+=`<br>+6000% Luck<br>+150% Roll Speed<br>+7%: +1 Aura`; break;
+
     }
 
     const needLine = Object.keys(needs[effect]).map(a=>{
@@ -4060,6 +4788,16 @@ function renderEffects(){
   });
 }
 
+
+// ===== An RNG Site +: potion effect globals =====
+let potionLuckBonusPct = 0;
+let potionCooldownMult = 1;
+let potionMinRarityFloor = 0;
+let potionMultiRollBonus = 0;
+let potionCoinMult = 1;
+let anomalySparkArmed = false;
+let nullPatchActive = false;
+
 /* =========================
    POTIONS
 ========================= */
@@ -4078,13 +4816,66 @@ const POTIONS = [
   { id:'PaperPotion', name:'Paper Potion', symbol:'▢', durationMs:0, desc:'+1 minute biome duration (current or next).', needs:{Paper:1, Common:50} },
 
   { id:'LegendaryPotion', name:'Legendary Potion', symbol:'✪', durationMs:0, desc:'Next roll guarantees rarity > 500.', needs:{Legendary:1, Money:5, Common:15} },
+
+
+  /* ===== An RNG Site +: 50 new potions ===== */
+  { id:'MinorLuckBrew', name:'Minor Luck Brew', symbol:'☘︎', durationMs:180000, desc:"+10% luck for 3 minutes.", needs:{'Rare':2, 'Coins':500} },
+  { id:'GreaterLuckBrew', name:'Greater Luck Brew', symbol:'☘︎', durationMs:180000, desc:"+25% luck for 3 minutes.", needs:{'Epic':3, 'Coins':1500} },
+  { id:'DivineLuck', name:'Divine Luck', symbol:'✧', durationMs:120000, desc:"+50% luck for 2 minutes.", needs:{'Archangel':1, 'Legendary':2} },
+  { id:'ChaosLuck', name:'Chaos Luck', symbol:'✹', durationMs:120000, desc:"Luck shifts wildly (+5%~+80%) for 2 minutes.", needs:{'Overdrive':1, 'Rage':10, 'Coins':2000} },
+  { id:'EclipseDraught', name:'Eclipse Draught', symbol:'◐', durationMs:90000, desc:"+35% luck and higher mutation bias for 90s.", needs:{'Eclipse':1, 'Coins':2500} },
+  { id:'ShadowLuck', name:'Shadow Luck', symbol:'☾', durationMs:150000, desc:"+20% luck for 2.5 minutes.", needs:{'Phantom':1, 'Night':5, 'Coins':1200} },
+  { id:'SystemLuck', name:'System Luck', symbol:'⌬', durationMs:120000, desc:"+30% luck for 2 minutes.", needs:{'Glitch':1, 'Coins':1400} },
+  { id:'NatureLuck', name:'Nature Luck', symbol:'❀', durationMs:150000, desc:"+18% luck for 2.5 minutes.", needs:{'Rain':3, 'Coins':1100} },
+  { id:'CelestialLuck', name:'Celestial Luck', symbol:'✦', durationMs:120000, desc:"+40% luck for 2 minutes.", needs:{'Galaxy':1, 'Coins':1800} },
+  { id:'PrimeLuckSerum', name:'Prime Luck Serum', symbol:'✪', durationMs:60000, desc:"+70% luck for 1 minute.", needs:{'Universe':1, 'Coins':3200} },
+  { id:'SwiftElixir', name:'Swift Elixir', symbol:'∞', durationMs:120000, desc:"-25% roll cooldown for 2 minutes.", needs:{'Faster':2, 'Coins':1200} },
+  { id:'HyperSwift', name:'HyperSwift', symbol:'∞', durationMs:60000, desc:"-40% roll cooldown for 1 minute.", needs:{'Faster':5, 'Coins':2500} },
+  { id:'ChronoTonic', name:'Chrono Tonic', symbol:'⧗', durationMs:90000, desc:"-30% roll cooldown for 90s.", needs:{'TIME':1, 'Coins':2200} },
+  { id:'StabilityTea', name:'Stability Tea', symbol:'▢', durationMs:180000, desc:"Reduces unlucky streaks (small luck smoothing) for 3 min.", needs:{'Common':200, 'Coins':800} },
+  { id:'OverclockMix', name:'Overclock Mix', symbol:'⌁', durationMs:60000, desc:"-50% roll cooldown for 1 minute.", needs:{'Overture':1, 'Coins':3500} },
+  { id:'FocusDraft', name:'Focus Draft', symbol:'◎', durationMs:150000, desc:"Slightly increases best-of attempts for 2.5 min.", needs:{'Worth':5, 'Coins':1600} },
+  { id:'AutoChain', name:'Auto Chain', symbol:'∞', durationMs:60000, desc:"Auto roll faster (QuickPotion style) for 1 min.", needs:{'Quick':1, 'Coins':2000} },
+  { id:'CooldownNull', name:'Cooldown Null', symbol:'∅', durationMs:30000, desc:"Roll cooldown becomes 0 for 30s.", needs:{'Null':1, 'Coins':5000} },
+  { id:'SilentHands', name:'Silent Hands', symbol:'◌', durationMs:120000, desc:"Removes most roll animations for 2 min (UI only).", needs:{'Faster':1, 'Coins':900} },
+  { id:'MomentumSerum', name:'Momentum Serum', symbol:'➤', durationMs:120000, desc:"Small speed + small luck for 2 min.", needs:{'Looping':3, 'Coins':1400} },
+  { id:'NebulaFloor', name:'Nebula Floor', symbol:'✦', durationMs:60000, desc:"For 60s: can only roll rarity > 80.", needs:{'Nebula':5, 'Coins':1200} },
+  { id:'PrismFloor', name:'Prism Floor', symbol:'✧', durationMs:60000, desc:"For 60s: can only roll rarity > 200.", needs:{'Prism':10, 'Coins':2200} },
+  { id:'LegendFloor', name:'Legend Floor', symbol:'✪', durationMs:60000, desc:"For 60s: can only roll rarity > 500.", needs:{'Legendary':1, 'Coins':3000} },
+  { id:'MythicFloor', name:'Mythic Floor', symbol:'✪', durationMs:45000, desc:"For 45s: can only roll rarity > 2500.", needs:{'Universe':1, 'Coins':5500} },
+  { id:'TranscendFloor', name:'Transcend Floor', symbol:'✪', durationMs:30000, desc:"For 30s: can only roll rarity > 10000.", needs:{'Layers':1, 'Coins':9000} },
+  { id:'VoidFilter', name:'Void Filter', symbol:'◈', durationMs:60000, desc:"For 60s: avoids very common auras (rarity > 40).", needs:{'Void':3, 'Coins':1700} },
+  { id:'GoldFilter', name:'Gold Filter', symbol:'✶', durationMs:60000, desc:"For 60s: avoids commons (rarity > 100).", needs:{'Money':5, 'Coins':1800} },
+  { id:'StormFilter', name:'Storm Filter', symbol:'⚡', durationMs:60000, desc:"For 60s: favors high rolls slightly.", needs:{'Windstorm':2, 'Coins':1600} },
+  { id:'AngelFilter', name:'Angel Filter', symbol:'☼', durationMs:60000, desc:"For 60s: favors Divine-tagged auras.", needs:{'Archangel':1, 'Coins':2600} },
+  { id:'GlitchFilter', name:'Glitch Filter', symbol:'⌁', durationMs:60000, desc:"For 60s: favors Glitch-tagged auras.", needs:{'Glitch':1, 'Coins':2300} },
+  { id:'TwinRoll', name:'Twin Roll', symbol:'Ⅱ', durationMs:60000, desc:"+1 extra roll per click for 1 minute.", needs:{'Alt':5, 'Coins':2500} },
+  { id:'TripleRoll', name:'Triple Roll', symbol:'Ⅲ', durationMs:45000, desc:"+2 extra rolls per click for 45s.", needs:{'Alt':10, 'Coins':4500} },
+  { id:'BurstRoll', name:'Burst Roll', symbol:'✶', durationMs:30000, desc:"+3 extra rolls per click for 30s.", needs:{'Looping':10, 'Coins':6500} },
+  { id:'ImpactSerum', name:'Impact Serum', symbol:'▣', durationMs:60000, desc:"For 60s: always at least 2 rolls per click.", needs:{'ImpactFrame':1, 'Coins':3000} },
+  { id:'HateCatalyst', name:'Hate Catalyst', symbol:'✖', durationMs:60000, desc:"Boosts PureHate multi-roll chances for 60s.", needs:{'PureHate':1, 'Coins':3400} },
+  { id:'RiftSplit', name:'Rift Split', symbol:'⟡', durationMs:45000, desc:"+1 extra roll and slight luck for 45s.", needs:{'Dimensional':1, 'Coins':4200} },
+  { id:'EchoChain', name:'Echo Chain', symbol:'≋', durationMs:60000, desc:"+1 extra roll, -15% cooldown for 60s.", needs:{'Looping':5, 'Coins':2800} },
+  { id:'LuckyBurst', name:'Lucky Burst', symbol:'✹', durationMs:30000, desc:"+2 extra rolls and +20% luck for 30s.", needs:{'Worth':15, 'Coins':6000} },
+  { id:'SystemBurst', name:'System Burst', symbol:'⌬', durationMs:30000, desc:"+2 extra rolls; Glitch bias for 30s.", needs:{'Glitch':1, 'Coins':5200} },
+  { id:'CelestialBurst', name:'Celestial Burst', symbol:'✦', durationMs:30000, desc:"+2 extra rolls; Cosmic bias for 30s.", needs:{'Galaxy':1, 'Coins':5200} },
+  { id:'VolcanicCall', name:'Volcanic Call', symbol:'🌋', durationMs:0, desc:"Instantly spawns Volcanic Abyss biome.", needs:{'Magma King':1, 'Coins':5000} },
+  { id:'DeepSpaceCall', name:'Deep Space Call', symbol:'🌌', durationMs:0, desc:"Instantly spawns Deep Space biome.", needs:{'Star Tyrant':1, 'Coins':5000} },
+  { id:'AbyssCall', name:'Abyss Call', symbol:'🕳️', durationMs:0, desc:"Instantly spawns Abyss biome.", needs:{'Abyss Lord':1, 'Coins':5000} },
+  { id:'BloomCall', name:'Bloom Call', symbol:'🌺', durationMs:0, desc:"Instantly spawns Bloom Realm biome.", needs:{'Blossom Queen':1, 'Coins':5000} },
+  { id:'StormCall', name:'Storm Call', symbol:'⚡', durationMs:0, desc:"Instantly spawns Storm Citadel biome.", needs:{'Thunder King':1, 'Coins':5000} },
+  { id:'CoinSurge', name:'Coin Surge', symbol:'$', durationMs:60000, desc:"Coin gain +100% for 1 minute.", needs:{'Money':10, 'Coins':1500} },
+  { id:'StorageBurst', name:'Storage Burst', symbol:'▣', durationMs:0, desc:"Gives +1 Storage slot (once).", needs:{'Common':250, 'Coins':2500} },
+  { id:'ResetFocus', name:'Reset Focus', symbol:'↺', durationMs:0, desc:"Resets RNG tension (bonus roll state).", needs:{'Common':100, 'Coins':800} },
+  { id:'AnomalySpark', name:'Anomaly Spark', symbol:'✪', durationMs:0, desc:"Next roll has a tiny Anomaly chance boost.", needs:{'Anomaly':1, 'Coins':12000} },
+  { id:'NullPatch', name:'Null Patch', symbol:'∅', durationMs:60000, desc:"Slightly reduces glitch penalties for 60s.", needs:{'Null':1, 'Coins':2000} },
 ];
 
-let potionInventory = {
-  LuckyPotion:0, QuickPotion:0, FasterPotion:0, AuroraPotion:0, NebulaPotion:0,
-  DimensionalPotion:0, HunterPotion:0, PaperPotion:0,
-  LegendaryPotion:0
-};
+let potionInventory = {};
+function normalizePotionInventory(){
+  POTIONS.forEach(p=>{ if(!(p.id in potionInventory)) potionInventory[p.id]=0; });
+}
+normalizePotionInventory();
 let potionProgress = {};
 function initPotionProgress(){
   potionProgress = {};
@@ -4095,10 +4886,84 @@ function initPotionProgress(){
 }
 initPotionProgress();
 
-let activePotionTimers = {
-  LuckyPotion:0, QuickPotion:0, FasterPotion:0, NebulaPotion:0,
-  HunterPotion:0
+let activePotionTimers = {};
+function normalizeActivePotionTimers(){
+  POTIONS.forEach(p=>{ if(p.durationMs>0 && !(p.id in activePotionTimers)) activePotionTimers[p.id]=0; });
+}
+normalizeActivePotionTimers();
+// ===== An RNG Site +: potion effect handlers =====
+const POTION_EFFECTS = {
+  // Luck
+  MinorLuckBrew:{ on:()=>{potionLuckBonusPct += 10;}, off:()=>{potionLuckBonusPct -= 10;} },
+  GreaterLuckBrew:{ on:()=>{potionLuckBonusPct += 25;}, off:()=>{potionLuckBonusPct -= 25;} },
+  DivineLuck:{ on:()=>{potionLuckBonusPct += 50;}, off:()=>{potionLuckBonusPct -= 50;} },
+  ShadowLuck:{ on:()=>{potionLuckBonusPct += 20;}, off:()=>{potionLuckBonusPct -= 20;} },
+  SystemLuck:{ on:()=>{potionLuckBonusPct += 30;}, off:()=>{potionLuckBonusPct -= 30;} },
+  NatureLuck:{ on:()=>{potionLuckBonusPct += 18;}, off:()=>{potionLuckBonusPct -= 18;} },
+  CelestialLuck:{ on:()=>{potionLuckBonusPct += 40;}, off:()=>{potionLuckBonusPct -= 40;} },
+  PrimeLuckSerum:{ on:()=>{potionLuckBonusPct += 70;}, off:()=>{potionLuckBonusPct -= 70;} },
+  EclipseDraught:{ on:()=>{potionLuckBonusPct += 35;}, off:()=>{potionLuckBonusPct -= 35;} },
+  ChaosLuck:{
+    on:()=>{ /* chaos luck re-rolls every 5s */
+      potionLuckBonusPct += 5;
+      POTION_EFFECTS.ChaosLuck._i = setInterval(()=>{
+        const cur = 5 + Math.floor(Math.random()*76); // 5..80
+        potionLuckBonusPct -= POTION_EFFECTS.ChaosLuck._cur||0;
+        potionLuckBonusPct += cur;
+        POTION_EFFECTS.ChaosLuck._cur = cur;
+      }, 5000);
+    },
+    off:()=>{
+      if(POTION_EFFECTS.ChaosLuck._i) clearInterval(POTION_EFFECTS.ChaosLuck._i);
+      potionLuckBonusPct -= (POTION_EFFECTS.ChaosLuck._cur||5);
+      POTION_EFFECTS.ChaosLuck._cur = 0;
+      POTION_EFFECTS.ChaosLuck._i = null;
+    }
+  },
+
+  // Speed / cooldown
+  SwiftElixir:{ on:()=>{potionCooldownMult *= 0.75;}, off:()=>{potionCooldownMult /= 0.75;} },
+  HyperSwift:{ on:()=>{potionCooldownMult *= 0.60;}, off:()=>{potionCooldownMult /= 0.60;} },
+  ChronoTonic:{ on:()=>{potionCooldownMult *= 0.70;}, off:()=>{potionCooldownMult /= 0.70;} },
+  OverclockMix:{ on:()=>{potionCooldownMult *= 0.50;}, off:()=>{potionCooldownMult /= 0.50;} },
+  CooldownNull:{ on:()=>{potionCooldownMult *= 0.0;}, off:()=>{potionCooldownMult = 1;} }, // force reset
+  MomentumSerum:{ on:()=>{potionCooldownMult *= 0.85; potionLuckBonusPct += 10;}, off:()=>{potionCooldownMult /= 0.85; potionLuckBonusPct -= 10;} },
+
+  // Rarity floors
+  NebulaFloor:{ on:()=>{potionMinRarityFloor = Math.max(potionMinRarityFloor, 80);}, off:()=>{potionMinRarityFloor = 0;} },
+  PrismFloor:{ on:()=>{potionMinRarityFloor = Math.max(potionMinRarityFloor, 200);}, off:()=>{potionMinRarityFloor = 0;} },
+  LegendFloor:{ on:()=>{potionMinRarityFloor = Math.max(potionMinRarityFloor, 500);}, off:()=>{potionMinRarityFloor = 0;} },
+  MythicFloor:{ on:()=>{potionMinRarityFloor = Math.max(potionMinRarityFloor, 2500);}, off:()=>{potionMinRarityFloor = 0;} },
+  TranscendFloor:{ on:()=>{potionMinRarityFloor = Math.max(potionMinRarityFloor, 10000);}, off:()=>{potionMinRarityFloor = 0;} },
+  VoidFilter:{ on:()=>{potionMinRarityFloor = Math.max(potionMinRarityFloor, 40);}, off:()=>{potionMinRarityFloor = 0;} },
+  GoldFilter:{ on:()=>{potionMinRarityFloor = Math.max(potionMinRarityFloor, 100);}, off:()=>{potionMinRarityFloor = 0;} },
+
+  // Multi-roll
+  TwinRoll:{ on:()=>{potionMultiRollBonus += 1;}, off:()=>{potionMultiRollBonus -= 1;} },
+  TripleRoll:{ on:()=>{potionMultiRollBonus += 2;}, off:()=>{potionMultiRollBonus -= 2;} },
+  BurstRoll:{ on:()=>{potionMultiRollBonus += 3;}, off:()=>{potionMultiRollBonus -= 3;} },
+  RiftSplit:{ on:()=>{potionMultiRollBonus += 1; potionLuckBonusPct += 12;}, off:()=>{potionMultiRollBonus -= 1; potionLuckBonusPct -= 12;} },
+  EchoChain:{ on:()=>{potionMultiRollBonus += 1; potionCooldownMult *= 0.85;}, off:()=>{potionMultiRollBonus -= 1; potionCooldownMult /= 0.85;} },
+  LuckyBurst:{ on:()=>{potionMultiRollBonus += 2; potionLuckBonusPct += 20;}, off:()=>{potionMultiRollBonus -= 2; potionLuckBonusPct -= 20;} },
+  SystemBurst:{ on:()=>{potionMultiRollBonus += 2;}, off:()=>{potionMultiRollBonus -= 2;} },
+  CelestialBurst:{ on:()=>{potionMultiRollBonus += 2;}, off:()=>{potionMultiRollBonus -= 2;} },
+
+  // Biome callers (instant)
+  VolcanicCall:{ on:()=>{ forceSpawnSpecificBiome('Volcanic Abyss'); } },
+  DeepSpaceCall:{ on:()=>{ forceSpawnSpecificBiome('Deep Space'); } },
+  AbyssCall:{ on:()=>{ forceSpawnSpecificBiome('Abyss'); } },
+  BloomCall:{ on:()=>{ forceSpawnSpecificBiome('Bloom Realm'); } },
+  StormCall:{ on:()=>{ forceSpawnSpecificBiome('Storm Citadel'); } },
+
+  // Utility
+  CoinSurge:{ on:()=>{potionCoinMult *= 2;}, off:()=>{potionCoinMult /= 2;} },
+  StorageBurst:{ on:()=>{ storageCap += 1; updateStorageUI(); }, off:null },
+  ResetFocus:{ on:()=>{ bonusArmed = true; }, off:null },
+  AnomalySpark:{ on:()=>{ anomalySparkArmed = true; }, off:null },
+  NullPatch:{ on:()=>{ nullPatchActive = true; }, off:()=>{ nullPatchActive = false; } },
+
 };
+
 let auroraPotionArmed=false;
 let legendaryPotionArmed=false;
 
@@ -4223,6 +5088,18 @@ function craftPotion(potionId){
   saveGame();
 }
 
+
+function forceSpawnSpecificBiome(biomeName){
+  const rule = BIOME_RULES.find(r=>r.name===biomeName);
+  if(!rule) return forceSpawnRandomBiome();
+  currentBiome = biomeName;
+  biomeEndTime = Date.now() + (rule.duration||rule.durationMs||90000) + (pendingPaperBoostMs||0);
+  pendingPaperBoostMs = 0;
+  updateBiomeLabel();
+  applyBiomeFXClass();
+  try{ sfx('biome'); }catch(e){}
+}
+
 function forceSpawnRandomBiome(){
   let total = 0;
   for(const r of BIOME_RULES) total += (r.chance * biomeChanceMultiplier);
@@ -4290,10 +5167,27 @@ if(mo && mo.classList.contains("show")) renderMissions();
     return;
   }
 
-  const p = POTIONS.find(x=>x.id===potionId);
+  
+  // An RNG Site +: instant potions (durationMs === 0) handled here
+  const pInstant = POTIONS.find(x=>x.id===potionId);
+  if(pInstant && pInstant.durationMs===0 && POTION_EFFECTS[potionId] && POTION_EFFECTS[potionId].on){
+    try{ POTION_EFFECTS[potionId].on(); }catch(e){}
+    renderActivePotions();
+    renderPotions();
+    updateCurrentLuckUI((bonusArmed?1.5:1));
+    saveGame();
+    return;
+  }
+
+const p = POTIONS.find(x=>x.id===potionId);
   if(!p) return;
 
   activePotionTimers[potionId] = p.durationMs;
+
+  // An RNG Site +: apply potion effect (duration)
+  if(POTION_EFFECTS[potionId] && POTION_EFFECTS[potionId].on){
+    try{ POTION_EFFECTS[potionId].on(); }catch(e){}
+  }
 
   if(potionId==='LuckyPotion') luckyActive=true;
   if(potionId==='FasterPotion') fasterActive=true;
@@ -4311,6 +5205,11 @@ if(mo && mo.classList.contains("show")) renderMissions();
   saveGame();
 
   setTimeout(()=>{
+    // An RNG Site +: remove potion effect
+    if(POTION_EFFECTS[potionId] && POTION_EFFECTS[potionId].off){
+      try{ POTION_EFFECTS[potionId].off(); }catch(e){}
+    }
+
     if(potionId==='LuckyPotion') luckyActive=false;
     if(potionId==='FasterPotion') fasterActive=false;
     if(potionId==='NebulaPotion') nebulaPotionActive=false;
@@ -4532,7 +5431,7 @@ function biomeAdjustedRarity(a){
   let r = a.rarity;
 
   // Glitch biome: ALL auras become 50% less rare (better odds)
-  if(currentBiome === 'Glitch' && isBiomeActive()){
+  if(currentBiome === 'Glitch' && isBiomeActive() && !nullPatchActive){
     r = Math.max(1, Math.round(r * 0.5));
   }
 
@@ -4685,7 +5584,49 @@ function pickOneAura(){
   if(currentBiome === 'Windstorm'){
     return pickWindstorm();
   }
+  if(currentBiome === 'Volcanic Abyss'){
+    return pickVolcanicAbyss();
+  }
+  if(currentBiome === 'Deep Space'){
+    return pickDeepSpace();
+  }
+  if(currentBiome === 'Abyss'){
+    return pickAbyss();
+  }
+  if(currentBiome === 'Bloom Realm'){
+    return pickBloomRealm();
+  }
+  if(currentBiome === 'Storm Citadel'){
+    return pickStormCitadel();
+  }
   return weightedPick(aurasData);
+
+// ===== An RNG Site +: new biome pickers =====
+function pickVolcanicAbyss(){
+  // Normal pool + biome exclusives (specials remain possible, not exclusive-only)
+  const pool = aurasData.concat(volcanicAbyssAurasData);
+  return weightedPick(pool);
+}
+function pickDeepSpace(){
+  // Normal pool + biome exclusives (specials remain possible, not exclusive-only)
+  const pool = aurasData.concat(deepSpaceAurasData);
+  return weightedPick(pool);
+}
+function pickAbyss(){
+  // Normal pool + biome exclusives (specials remain possible, not exclusive-only)
+  const pool = aurasData.concat(abyssAurasData);
+  return weightedPick(pool);
+}
+function pickBloomRealm(){
+  // Normal pool + biome exclusives (specials remain possible, not exclusive-only)
+  const pool = aurasData.concat(bloomRealmAurasData);
+  return weightedPick(pool);
+}
+function pickStormCitadel(){
+  // Normal pool + biome exclusives (specials remain possible, not exclusive-only)
+  const pool = aurasData.concat(stormCitadelAurasData);
+  return weightedPick(pool);
+}
 }
 
 /* =========================
@@ -4698,6 +5639,9 @@ function getHiddenLuckPercent(){
 function getTotalLuckMultiplier(extraMultiplier=1){
   let pct = 0;
 
+  // An RNG Site + potions
+  pct += potionLuckBonusPct;
+
   if(effects.includes('Windstorm')) pct += 50;
   if(effects.includes('Lumi')) pct += 100;
   if(effects.includes('CometBlessing')) pct += 250;
@@ -4708,13 +5652,27 @@ function getTotalLuckMultiplier(extraMultiplier=1){
   if(hunterPotionActive) pct += 350;
 
   pct += getHiddenLuckPercent();
+  // Admin Panel override
+  pct += (window.adminLuckPct || 0);
+
 
   const base = 1 + (pct / 100);
   return base * extraMultiplier;
 }
 
 function pickWithLuckMultiplier(extraMultiplier=1){
-  const mult = getTotalLuckMultiplier(extraMultiplier);
+  let mult = getTotalLuckMultiplier(extraMultiplier);
+  // Admin Panel: force next roll multiplier
+  if(window.adminNextRollLuckMult != null){
+    mult = Math.max(1, Number(window.adminNextRollLuckMult)||1);
+    window.adminNextRollLuckMult = null;
+  }
+
+  // An RNG Site +: Anomaly Spark
+  if(anomalySparkArmed){
+    anomalySparkArmed = false;
+    if(Math.random() < 0.02) return weightedPick(anomalyAurasData);
+  }
 
   let attempts = Math.max(1, Math.floor(mult));
   const frac = mult - Math.floor(mult);
@@ -4725,6 +5683,11 @@ function pickWithLuckMultiplier(extraMultiplier=1){
   let best = null;
   for(let i=0;i<attempts;i++){
     const a = pickOneAura();
+    // An RNG Site + potions: rarity floor
+    if(potionMinRarityFloor && a.rarity < potionMinRarityFloor){
+      // reroll once (keep best logic outside)
+      continue;
+    }
     if(!best || a.rarity > best.rarity) best = a;
   }
   return best;
@@ -4836,16 +5799,24 @@ document.getElementById('rollBtn').onclick = ()=>rollAura();
 function getMultiRollCount(){
   // Impact Frame: always at least 2 rolls per spin
   const base = effects.includes('ImpactFrame') ? 2 : 1;
+  const basePlus = base + (potionMultiRollBonus||0);
+
+  // Extra-roll effects (additive)
+  let extra = 0;
+  if(effects.includes('VolcanicCore') && Math.random() < 0.10) extra += 1;
+  if(effects.includes('SplitReality') && Math.random() < 0.07) extra += 1;
 
   // PureHate: chance-based multi-roll
-  if(!effects.includes('PureHate')) return base;
+  let result = basePlus;
+  if(effects.includes('PureHate')){
+    const r = Math.random();
+    let ph = 1;
+    if(r < 0.15) ph = 3;
+    else if(r < 0.15 + 0.35) ph = 2;
+    result = Math.max(base, ph);
+  }
 
-  const r = Math.random();
-  let ph = 1;
-  if(r < 0.15) ph = 3;
-  else if(r < 0.15 + 0.35) ph = 2;
-
-  return Math.max(base, ph);
+  return Math.max(base, result + extra);
 }
 
 
@@ -4859,6 +5830,7 @@ function updateSpeedVars(){
 function getCooldownMultiplier(){
   let m = 1;
 
+
   if(effects.includes('Windstorm')) m *= 0.90;
   if(effects.includes('Lumi')) m *= 0.75;
   if(effects.includes('GalaxySpace')) m *= 0.95;
@@ -4869,21 +5841,47 @@ function getCooldownMultiplier(){
   if(effects.includes('ColorMadness')) m *= (1/1.5);
 if(fasterActive) m *= 0.50;
 
+  
+  if(effects.includes('VolcanicCore')) m *= 0.833333;
+  if(effects.includes('DeepSpaceDrift')) m *= 0.800000;
+  if(effects.includes('AbyssalVeil')) m *= 0.769231;
+  if(effects.includes('BloomingGrace')) m *= 0.740741;
+  if(effects.includes('ChronoLatch')) m *= 0.666667;
+  if(effects.includes('StormCircuit')) m *= 0.714286;
+  if(effects.includes('MerchantMoon')) m *= 0.625000;
+  if(effects.includes('AnomalyLens')) m *= 0.555556;
+  if(effects.includes('CollectorInstinct')) m *= 0.500000;
+  if(effects.includes('SplitReality')) m *= 0.400000;
   return m;
 }
 
+
 function getRollingDelayMs(){
   let d = 500;
+  // Admin Panel: override rolling delay (ms)
+  if(window.adminRollDelayMsOverride != null){
+    const v = Number(window.adminRollDelayMsOverride);
+    if(Number.isFinite(v) && v >= 0) return Math.round(v);
+  }
+
+
 
   if(effects.includes('Timing')) d = Math.round(d * 0.65);
 
-  
+  if(effects.includes('StormCircuit')) d = Math.round(d * 0.714286);
+  if(effects.includes('ChronoLatch')) d = Math.round(d * 0.666667);
+
+
   if(effects.includes('ColorMadness')) d = Math.round(d * (1/1.5));
 const chrono = (currentBiome === 'Chrono' && isBiomeActive());
   if(fasterActive || chrono) d = 0;
 
-  return d;
+  // An RNG Site + potions
+  d = Math.max(0, Math.round(d * (potionCooldownMult||1)));
+
+    return d;
 }
+
 
 function setRolledText(aura){
   const rolledEl=document.getElementById('rolledAura');
@@ -5039,7 +6037,7 @@ async function rollAura(){
       startSeveranceCutscene(()=>{
         setRolledText(first);
         rarityEl.textContent = `Rarity: ${first.rarity}`;
-        rolledEl.classList.add('rollAnim');
+        if(!window.disableRollAnim){ rolledEl.classList.add('rollAnim'); }
         setTimeout(()=>rolledEl.classList.remove('rollAnim'),500);
       });
     }
@@ -5051,7 +6049,7 @@ async function rollAura(){
       startRunHideCutscene(()=>{
         setRolledText(first);
         rarityEl.textContent = `Rarity: ${first.rarity}`;
-        rolledEl.classList.add('rollAnim');
+        if(!window.disableRollAnim){ rolledEl.classList.add('rollAnim'); }
         setTimeout(()=>rolledEl.classList.remove('rollAnim'),500);
       });
     }
@@ -5063,7 +6061,7 @@ async function rollAura(){
       startDistorcedEffect(()=>{
         setRolledText(first);
         rarityEl.textContent = `Rarity: ${first.rarity}`;
-        rolledEl.classList.add('rollAnim');
+        if(!window.disableRollAnim){ rolledEl.classList.add('rollAnim'); }
         setTimeout(()=>rolledEl.classList.remove('rollAnim'),500);
       });
     }
@@ -5075,7 +6073,7 @@ async function rollAura(){
       startNullscapeCutscene(()=>{
         setRolledText(first);
         rarityEl.textContent = `Rarity: ${first.rarity}`;
-        rolledEl.classList.add('rollAnim');
+        if(!window.disableRollAnim){ rolledEl.classList.add('rollAnim'); }
         setTimeout(()=>rolledEl.classList.remove('rollAnim'),500);
       });
     }
@@ -5087,7 +6085,7 @@ async function rollAura(){
       startGlitchCutscene(()=>{
         setRolledText(first);
         rarityEl.textContent = `Rarity: ${first.rarity}`;
-        rolledEl.classList.add('rollAnim');
+        if(!window.disableRollAnim){ rolledEl.classList.add('rollAnim'); }
         setTimeout(()=>rolledEl.classList.remove('rollAnim'),500);
       });
     }
@@ -5099,7 +6097,7 @@ async function rollAura(){
       startCyberfantasiaCutscene(()=>{
         setRolledText(first);
         rarityEl.textContent = `Rarity: ${first.rarity}`;
-        rolledEl.classList.add('rollAnim');
+        if(!window.disableRollAnim){ rolledEl.classList.add('rollAnim'); }
         setTimeout(()=>rolledEl.classList.remove('rollAnim'),500);
       });
     }
@@ -5111,7 +6109,7 @@ async function rollAura(){
       startCrazyCutscene(()=>{
         setRolledText(first);
         rarityEl.textContent = `Rarity: ${first.rarity}`;
-        rolledEl.classList.add('rollAnim');
+        if(!window.disableRollAnim){ rolledEl.classList.add('rollAnim'); }
         setTimeout(()=>rolledEl.classList.remove('rollAnim'),500);
       });
     }
@@ -5123,7 +6121,7 @@ async function rollAura(){
       startAnnihilationCutscene(()=>{
         setRolledText(first);
         rarityEl.textContent = `Rarity: ${first.rarity}`;
-        rolledEl.classList.add('rollAnim');
+        if(!window.disableRollAnim){ rolledEl.classList.add('rollAnim'); }
         setTimeout(()=>rolledEl.classList.remove('rollAnim'),500);
       });
     }
@@ -5135,7 +6133,7 @@ async function rollAura(){
       startVirtualCutscene(()=>{
         setRolledText(first);
         rarityEl.textContent = `Rarity: ${first.rarity}`;
-        rolledEl.classList.add('rollAnim');
+        if(!window.disableRollAnim){ rolledEl.classList.add('rollAnim'); }
         setTimeout(()=>rolledEl.classList.remove('rollAnim'),500);
       });
     }
@@ -5148,7 +6146,7 @@ async function rollAura(){
       startLayersCutscene(()=>{
         setRolledText(first);
         rarityEl.textContent = `Rarity: ${first.rarity}`;
-        rolledEl.classList.add('rollAnim');
+        if(!window.disableRollAnim){ rolledEl.classList.add('rollAnim'); }
         setTimeout(()=>rolledEl.classList.remove('rollAnim'),500);
       });
     }
@@ -5201,7 +6199,7 @@ async function rollAura(){
         spawnExplosion('normal');
       }
 
-      rolledEl.classList.add('rollAnim');
+      if(!window.disableRollAnim){ rolledEl.classList.add('rollAnim'); }
       setTimeout(()=>rolledEl.classList.remove('rollAnim'),500);
     }
 
@@ -5220,7 +6218,9 @@ const mo = document.getElementById("missionsOverlay");
 if(mo && mo.classList.contains("show")) renderMissions();
 
 
-    coins += 5;
+    const coinMult = (potionCoinMult||1) * (effects.includes('MerchantMoon') ? 1.5 : 1);
+    const coinBonus = effects.includes('CollectorInstinct') ? 2 : 0;
+    coins += Math.round((5 + coinBonus) * coinMult);
     updateCoinsUI();
 
     // ---- BONUS COUNTER LOGIC ----
@@ -5657,6 +6657,21 @@ function runIntro(){
 
 loadGame();
 
+// Save-shape normalization (An RNG Site +)
+try{ normalizePotionInventory(); initPotionProgress(); normalizeActivePotionTimers(); }catch(e){}
+try{
+  // ensure new effects exist in old saves
+  allEffects.forEach(id=>{ if(crafted[id] == null) crafted[id] = false; });
+  craftProgress = craftProgress || {};
+  const needs = getEffectNeeds();
+  for(const id of allEffects){
+    craftProgress[id] = craftProgress[id] || {};
+    const req = needs[id] || {};
+    for(const k in req){ if(craftProgress[id][k] == null) craftProgress[id][k] = 0; }
+  }
+}catch(e){}
+
+
 ensureDailyMissions();
 refreshRolling();
 refreshStorage();
@@ -5888,14 +6903,13 @@ if(storageSearch){
 // Welcome back message (2nd visit+)
 const visits = Number(localStorage.getItem("visits") || 0) + 1;
 localStorage.setItem("visits", visits);
-if(visits > 1){
+
+// player-configurable
+if(visits > 1 && (!window.CONFIGS || window.CONFIGS.welcomeBack)){
   const msg = document.createElement("div");
   msg.id = "welcomeBack";
   msg.innerHTML = "<div class='welcomeText'>Oh, welcome back!</div>";
   document.body.appendChild(msg);
-
-  // fade in
-  requestAnimationFrame(()=> msg.classList.add("show"));
 
   // fade out
   setTimeout(()=> msg.classList.remove("show"), 1600);
@@ -5977,6 +6991,71 @@ function getAllAurasForCollection(){
   return Array.from(byName.values());
 }
 
+
+function getAuraEffectText(aura){
+  if(!aura) return "";
+  if(aura.layers) return "Effect: Layers distortion (visual).";
+  if(aura.universe) return "Effect: Universe starfield (visual).";
+  if(aura.galaxy) return "Effect: Galaxy shimmer (visual).";
+  if(aura.comet) return "Effect: Comet streaks (visual).";
+  if(aura.time) return "Effect: Time ring (visual).";
+  if(aura.hunter) return "Effect: Hunter slashes (visual).";
+  if(aura.severance) return "Effect: Severance scanlines (visual).";
+  if(aura.photon) return "Effect: Photon rush (visual).";
+  if(aura.money) return "Effect: Money sparkle (visual).";
+  if(aura.web) return "Effect: Web panels (visual).";
+  if(aura.balance) return "Effect: Balance pattern (visual).";
+  if(aura.nullscape) return "Effect: Nullscape glitch (visual).";
+  if(aura.glitch) return "Effect: Glitch scrambling (visual).";
+  if(aura.archangel) return "Effect: Angelic glow (visual).";
+  if(aura.bloodmoon) return "Effect: Blood moon rain (visual).";
+  if(aura.overture) return "Effect: Overture clock (visual).";
+  if(aura.phantom) return "Effect: Phantom wisp (visual).";
+  if(aura.sand) return "Effect: Sand sweep (visual).";
+  if(aura.tempest) return "Effect: Tempest streaks (visual).";
+  if(aura.sound) return "Effect: Sound waves (visual).";
+  return "";
+}
+
+function formatRarity(aura){
+  const r = aura?.rarity;
+  if(!r || r<=0) return "";
+  return `1 in ${r}`;
+}
+
+function resetGameConfirm(){
+  if(!confirm("Are you sure you want to RESET the game?\n\nThis will delete your save data and reset everything.")) return;
+  try{
+    localStorage.removeItem(SAVE_KEY);
+    localStorage.removeItem('visits');
+    localStorage.removeItem('collectionUnlocked');
+    localStorage.removeItem('admin_unlocked');
+  }catch(e){}
+  location.reload();
+}
+
+window.addEventListener('load', ()=>{
+  loadConfigs();
+  syncConfigsUI();
+  applyConfigs();
+
+  const saveBtn = document.getElementById('saveConfigsBtn');
+  if(saveBtn) saveBtn.addEventListener('click', ()=>{
+    const c1 = document.getElementById('cfgCutscenes');
+    const c2 = document.getElementById('cfgBiomeFX');
+    const c3 = document.getElementById('cfgWelcomeBack');
+    CONFIGS.cutscenes = !!(c1 && c1.checked);
+    CONFIGS.biomeFX = !!(c2 && c2.checked);
+    CONFIGS.welcomeBack = !!(c3 && c3.checked);
+    saveConfigs();
+    applyConfigs();
+    try{ pulseUI(document.getElementById('collectionPanel')); }catch(e){}
+  });
+
+  const btn = document.getElementById('resetGameBtn');
+  if(btn) btn.addEventListener('click', resetGameConfirm);
+});
+
 function renderCollection(){
   const list = document.getElementById('collectionList');
   if(!list) return;
@@ -6021,6 +7100,12 @@ function renderCollection(){
 
     left.appendChild(n);
     left.appendChild(meta);
+
+    const meta2 = document.createElement('div');
+    meta2.className = 'collectionMeta';
+    meta2.style.opacity = '0.85';
+    meta2.textContent = unlocked ? getAuraEffectText(aura) : '';
+    left.appendChild(meta2);
 
     const count = document.createElement('div');
     count.className = 'collectionCount';
@@ -6069,7 +7154,422 @@ function closeCollection(){
   <div class="scFlash"></div>
 </div>
 
+
+<!-- ===== ADMIN PANEL (Secret) ===== -->
+<div id="adminOverlay" class="overlay" aria-hidden="true">
+  <button class="overlayClose" id="adminClose" title="Close" aria-label="Close">X</button>
+  <div class="overlayPanel" id="adminPanel">
+    <h2>Admin Panel</h2>
+    <div id="adminAuth">
+      <div style="font-size:12px;color:#cfcfcf;line-height:1.35;margin-bottom:10px;">
+        Enter password to access.
+      </div>
+      <input id="adminPass" type="password" placeholder="Password" style="width:100%;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,0.25);background:rgba(0,0,0,0.45);color:#fff;outline:none;font-size:14px;">
+      <button id="adminLoginBtn" style="margin-top:10px;width:100%;padding:9px 12px;border-radius:14px;border:1px solid #fff;background:none;color:#fff;cursor:pointer;">Unlock</button>
+      <div id="adminAuthMsg" style="margin-top:8px;font-size:12px;color:#ffb3b3;min-height:16px;"></div>
+    </div>
+
+    <div id="adminBody" style="display:none;">
+      <div style="font-size:12px;color:#cfcfcf;line-height:1.35;margin-bottom:12px;">
+        Secret controls. Use wisely.
+      </div>
+
+      <div class="logSection">
+        <h3>Luck & Rolls</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div>
+            <div style="font-size:12px;color:#cfcfcf;margin-bottom:6px;">Set permanent luck bonus (%)</div>
+            <input id="admLuckPct" type="number" placeholder="e.g. 5000" style="width:100%;padding:8px 10px;border-radius:12px;border:1px solid rgba(255,255,255,0.25);background:rgba(0,0,0,0.45);color:#fff;">
+            <button id="admSetLuckPct" style="margin-top:8px;width:100%;border-radius:12px;border:1px solid #fff;background:none;color:#fff;cursor:pointer;padding:7px 10px;">Set Luck</button>
+          </div>
+          <div>
+            <div style="font-size:12px;color:#cfcfcf;margin-bottom:6px;">Force next roll multiplier (x)</div>
+            <input id="admNextRollMult" type="number" step="0.1" placeholder="e.g. 999" style="width:100%;padding:8px 10px;border-radius:12px;border:1px solid rgba(255,255,255,0.25);background:rgba(0,0,0,0.45);color:#fff;">
+            <button id="admSetNextRoll" style="margin-top:8px;width:100%;border-radius:12px;border:1px solid #fff;background:none;color:#fff;cursor:pointer;padding:7px 10px;">Force Next Roll</button>
+          </div>
+          <div>
+            <div style="font-size:12px;color:#cfcfcf;margin-bottom:6px;">Set rolls count</div>
+            <input id="admRolls" type="number" placeholder="e.g. 100000" style="width:100%;padding:8px 10px;border-radius:12px;border:1px solid rgba(255,255,255,0.25);background:rgba(0,0,0,0.45);color:#fff;">
+            <button id="admSetRolls" style="margin-top:8px;width:100%;border-radius:12px;border:1px solid #fff;background:none;color:#fff;cursor:pointer;padding:7px 10px;">Set Rolls</button>
+          </div>
+          <div>
+            <div style="font-size:12px;color:#cfcfcf;margin-bottom:6px;">Set rolling delay (ms) (0 = instant)</div>
+            <input id="admDelay" type="number" placeholder="e.g. 0 / 500" style="width:100%;padding:8px 10px;border-radius:12px;border:1px solid rgba(255,255,255,0.25);background:rgba(0,0,0,0.45);color:#fff;">
+            <button id="admSetDelay" style="margin-top:8px;width:100%;border-radius:12px;border:1px solid #fff;background:none;color:#fff;cursor:pointer;padding:7px 10px;">Set Speed</button>
+          </div>
+        </div>
+
+        <div style="margin-top:12px;display:flex;gap:10px;align-items:center;">
+          <label style="font-size:12px;color:#cfcfcf;display:flex;gap:8px;align-items:center;">
+            <input id="admToggleAnim" type="checkbox">
+            Disable roll grow/shrink cutscene
+          </label>
+          <button id="admPlayCutscene" style="margin-left:auto;border-radius:12px;border:1px solid #fff;background:none;color:#fff;cursor:pointer;padding:7px 10px;">Play Cutscene</button>
+          <select id="admCutsceneSel" style="border-radius:12px;border:1px solid rgba(255,255,255,0.25);background:rgba(0,0,0,0.45);color:#fff;padding:7px 10px;">
+            <option value="Layers">Layers</option>
+            <option value="Severance">Severance</option>
+            <option value="RunHide">Run &amp; Hide</option>
+            <option value="Galaxy">Galaxy Explosion</option>
+            <option value="Universe">Universe Explosion</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="logSection">
+        <h3>Biome</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div>
+            <div style="font-size:12px;color:#cfcfcf;margin-bottom:6px;">Set current biome</div>
+            <select id="admBiome" style="width:100%;border-radius:12px;border:1px solid rgba(255,255,255,0.25);background:rgba(0,0,0,0.45);color:#fff;padding:8px 10px;">
+              <option>Natural</option>
+              <option>Inferno</option>
+              <option>Windstorm</option>
+              <option>Sky</option>
+              <option>Aurora</option>
+              <option>Desert</option>
+              <option>Rain</option>
+              <option>Zero</option>
+              <option>Chrono</option>
+              <option>Volcanic Abyss</option>
+              <option>Deep Space</option>
+              <option>Abyss</option>
+              <option>Bloom Realm</option>
+              <option>Storm Citadel</option>
+            </select>
+          </div>
+          <div>
+            <div style="font-size:12px;color:#cfcfcf;margin-bottom:6px;">Biome duration (seconds)</div>
+            <input id="admBiomeDur" type="number" placeholder="e.g. 300" style="width:100%;padding:8px 10px;border-radius:12px;border:1px solid rgba(255,255,255,0.25);background:rgba(0,0,0,0.45);color:#fff;">
+          </div>
+        </div>
+        <button id="admSetBiome" style="margin-top:10px;width:100%;border-radius:12px;border:1px solid #fff;background:none;color:#fff;cursor:pointer;padding:7px 10px;">Apply Biome</button>
+      </div>
+
+      <div class="logSection">
+        <h3>Items</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div>
+            <div style="font-size:12px;color:#cfcfcf;margin-bottom:6px;">Give coins</div>
+            <input id="admCoins" type="number" placeholder="e.g. 100000" style="width:100%;padding:8px 10px;border-radius:12px;border:1px solid rgba(255,255,255,0.25);background:rgba(0,0,0,0.45);color:#fff;">
+            <button id="admGiveCoins" style="margin-top:8px;width:100%;border-radius:12px;border:1px solid #fff;background:none;color:#fff;cursor:pointer;padding:7px 10px;">Add Coins</button>
+          </div>
+
+          <div>
+            <div style="font-size:12px;color:#cfcfcf;margin-bottom:6px;">Give potion (qty)</div>
+            <select id="admPotion" style="width:100%;border-radius:12px;border:1px solid rgba(255,255,255,0.25);background:rgba(0,0,0,0.45);color:#fff;padding:8px 10px;"></select>
+            <input id="admPotionQty" type="number" placeholder="e.g. 25" style="margin-top:8px;width:100%;padding:8px 10px;border-radius:12px;border:1px solid rgba(255,255,255,0.25);background:rgba(0,0,0,0.45);color:#fff;">
+            <button id="admGivePotion" style="margin-top:8px;width:100%;border-radius:12px;border:1px solid #fff;background:none;color:#fff;cursor:pointer;padding:7px 10px;">Give Potions</button>
+          </div>
+
+          <div>
+            <div style="font-size:12px;color:#cfcfcf;margin-bottom:6px;">Give aura by name (qty)</div>
+            <input id="admAuraName" type="text" placeholder="Exact aura name" style="width:100%;padding:8px 10px;border-radius:12px;border:1px solid rgba(255,255,255,0.25);background:rgba(0,0,0,0.45);color:#fff;">
+            <input id="admAuraQty" type="number" placeholder="e.g. 50" style="margin-top:8px;width:100%;padding:8px 10px;border-radius:12px;border:1px solid rgba(255,255,255,0.25);background:rgba(0,0,0,0.45);color:#fff;">
+            <button id="admGiveAura" style="margin-top:8px;width:100%;border-radius:12px;border:1px solid #fff;background:none;color:#fff;cursor:pointer;padding:7px 10px;">Give Aura(s)</button>
+          </div>
+
+          <div>
+            <div style="font-size:12px;color:#cfcfcf;margin-bottom:6px;">Unlock aura in Collection (fake)</div>
+            <input id="admUnlockAura" type="text" placeholder="Exact aura name" style="width:100%;padding:8px 10px;border-radius:12px;border:1px solid rgba(255,255,255,0.25);background:rgba(0,0,0,0.45);color:#fff;">
+            <button id="admDoUnlock" style="margin-top:8px;width:100%;border-radius:12px;border:1px solid #fff;background:none;color:#fff;cursor:pointer;padding:7px 10px;">Mark as Collected</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="logSection">
+        <h3>Effects & Missions</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div>
+            <div style="font-size:12px;color:#cfcfcf;margin-bottom:6px;">Craft any effect instantly</div>
+            <select id="admEffect" style="width:100%;border-radius:12px;border:1px solid rgba(255,255,255,0.25);background:rgba(0,0,0,0.45);color:#fff;padding:8px 10px;"></select>
+            <button id="admCraftEffect" style="margin-top:8px;width:100%;border-radius:12px;border:1px solid #fff;background:none;color:#fff;cursor:pointer;padding:7px 10px;">Instant Craft</button>
+          </div>
+          <div>
+            <div style="font-size:12px;color:#cfcfcf;margin-bottom:6px;">Complete & claim all daily missions</div>
+            <button id="admCompleteMissions" style="width:100%;border-radius:12px;border:1px solid #fff;background:none;color:#fff;cursor:pointer;padding:9px 10px;">Complete Missions</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<script>
+// ===== Admin Panel (Secret) =====
+(function(){
+  const PASS = "239935483239935483";
+  const ADMIN_UNLOCK_KEY = "anrng_admin_unlocked_v1";
+  window.adminLuckPct = window.adminLuckPct || 0;
+  window.adminNextRollLuckMult = null;
+  window.adminRollDelayMsOverride = null;
+  window.disableRollAnim = !!window.disableRollAnim;
+
+  function $(id){ return document.getElementById(id); }
+
+  function openAdmin(){
+    const o = $("adminOverlay");
+    if(!o) return;
+    o.classList.add("show");
+    o.setAttribute("aria-hidden","false");
+    // auth: remember unlock after first success
+    const unlocked = (()=>{ try{return localStorage.getItem(ADMIN_UNLOCK_KEY)==="1";}catch(e){return false;} })();
+    if(unlocked){
+      $("adminAuth").style.display = "none";
+      $("adminBody").style.display = "block";
+      $("adminAuthMsg").textContent = "";
+    }else{
+      $("adminAuth").style.display = "block";
+      $("adminBody").style.display = "none";
+      $("adminAuthMsg").textContent = "";
+      $("adminPass").value = "";
+      setTimeout(()=>{$("adminPass").focus();}, 50);
+    }
+    // populate selects
+    try{
+      const ps = $("admPotion");
+      if(ps && ps.options.length===0 && window.POTIONS){
+        POTIONS.forEach(p=>{
+          const opt=document.createElement("option");
+          opt.value=p.id; opt.textContent = p.name;
+          ps.appendChild(opt);
+        });
+      }
+    }catch(e){}
+    try{
+      const es = $("admEffect");
+      if(es && es.options.length===0 && window.allEffects){
+        allEffects.forEach(eff=>{
+          const opt=document.createElement("option");
+          opt.value=eff; opt.textContent = eff;
+          es.appendChild(opt);
+        });
+      }
+    }catch(e){}
+    // sync toggles
+    $("admToggleAnim").checked = !!window.disableRollAnim;
+  }
+
+  function closeAdmin(){
+    const o = $("adminOverlay");
+    if(!o) return;
+    o.classList.remove("show");
+    o.setAttribute("aria-hidden","true");
+    try{ saveGame(); }catch(e){}
+  }
+
+  function unlockAdmin(){
+    const v = ($("adminPass").value||"").trim();
+    if(v !== PASS){
+      $("adminAuthMsg").textContent = "Wrong password.";
+      return;
+    }
+    try{ localStorage.setItem(ADMIN_UNLOCK_KEY,"1"); }catch(e){}
+    $("adminAuth").style.display = "none";
+    $("adminBody").style.display = "block";
+    $("adminAuthMsg").textContent = "";
+    sfx && sfx("open");
+  }
+
+  function findAuraByName(name){
+    const n = (name||"").trim();
+    if(!n) return null;
+    const pools = [];
+    try{ if(window.aurasData) pools.push(window.aurasData); }catch(e){}
+    try{ if(window.anomalyAurasData) pools.push(window.anomalyAurasData); }catch(e){}
+    try{ if(window.biomeExclusiveAurasData) pools.push(window.biomeExclusiveAurasData); }catch(e){}
+    for(const arr of pools){
+      const a = arr.find(x=>x && x.name===n);
+      if(a) return a;
+    }
+    return null;
+  }
+
+  function adminGiveAura(){
+    const name = $("admAuraName").value;
+    const qty = Math.max(1, Number($("admAuraQty").value)||1);
+    const aura = findAuraByName(name);
+    if(!aura){ alert("Aura not found (use exact name)."); return; }
+    for(let i=0;i<qty;i++){
+      storage.push({...aura});
+      try{ unlockAuraInCollection(aura.name); }catch(e){}
+    }
+    try{ refreshStorage(); }catch(e){}
+    try{ refreshRolling(); }catch(e){}
+    saveGame();
+    alert("Done.");
+  }
+
+  function adminUnlockAura(){
+    const name = $("admUnlockAura").value;
+    if(!name.trim()) return;
+    try{ unlockAuraInCollection(name.trim()); saveGame(); alert("Marked."); }
+    catch(e){ alert("Failed: "+e); }
+  }
+
+  function adminGiveCoins(){
+    const amt = Number($("admCoins").value)||0;
+    if(!Number.isFinite(amt)) return;
+    coins += amt;
+    updateCoinsUI();
+    saveGame();
+  }
+
+  function adminSetLuckPct(){
+    const pct = Number($("admLuckPct").value)||0;
+    window.adminLuckPct = pct;
+    try{ updateCurrentLuckUI(bonusArmed?1.5:1); }catch(e){}
+    saveGame();
+  }
+
+  function adminSetNextRoll(){
+    const mult = Number($("admNextRollMult").value);
+    if(!Number.isFinite(mult) || mult<=0){ alert("Invalid multiplier."); return; }
+    window.adminNextRollLuckMult = mult;
+    alert("Next roll forced.");
+  }
+
+  function adminSetRolls(){
+    const v = Number($("admRolls").value);
+    if(!Number.isFinite(v) || v<0) return;
+    rollCount = Math.floor(v);
+    const el = document.getElementById("rollsLabel");
+    if(el) el.innerText = `Rolls: ${rollCount}`;
+    saveGame();
+  }
+
+  function adminSetDelay(){
+    const v = Number($("admDelay").value);
+    if(!Number.isFinite(v) || v<0) return;
+    window.adminRollDelayMsOverride = Math.floor(v);
+    saveGame();
+  }
+
+  function adminApplyBiome(){
+    const name = $("admBiome").value;
+    const sec = Math.max(0, Number($("admBiomeDur").value)||0);
+    const ms = Math.floor(sec*1000);
+    try{
+      if(ms<=0){
+        // set biome without timer
+        currentBiome = name;
+        biomeEndTime = 0;
+        updateBiomeLabel();
+        applyBiomeFXClass();
+        saveGame();
+      }else{
+        setBiome(name, ms);
+      }
+    }catch(e){
+      alert("Failed: "+e);
+    }
+  }
+
+  function adminGivePotion(){
+    const id = $("admPotion").value;
+    const qty = Math.max(1, Number($("admPotionQty").value)||1);
+    potionInventory[id] = (potionInventory[id]||0) + qty;
+    renderPotions();
+    renderActivePotions();
+    saveGame();
+  }
+
+  function adminInstantCraftEffect(){
+    const eff = $("admEffect").value;
+    if(!eff) return;
+    crafted[eff] = true;
+    // fill progress to needs for consistency
+    try{
+      const needs = getEffectNeeds()[eff];
+      if(needs){
+        craftProgress[eff] = craftProgress[eff] || {};
+        Object.keys(needs).forEach(k=> craftProgress[eff][k] = needs[k]);
+      }
+    }catch(e){}
+    renderEffects();
+    updateEquipped();
+    updateCurrentLuckUI(bonusArmed?1.5:1);
+    saveGame();
+  }
+
+  function adminCompleteMissions(){
+    try{
+      ensureDailyMissions();
+      // brute-force completion variables
+      dailyRolls = 999999;
+      dailyCometRolls = 999999;
+      dailyLuckyUsed = 999999;
+      dailyPlayMs = 999999999;
+      dailyExplored = { Desert:true, Zero:true, Windstorm:true, Chrono:true };
+      // claim all
+      missionsState.picks.forEach(id=>{
+        const def = getMissionDef(id);
+        const prog = missionProgress(def);
+        if(prog.done && !missionsState.claimed[id]){
+          missionsState.claimed[id] = true;
+          applyMissionReward(def.reward);
+        }
+      });
+      renderMissions();
+      saveGame();
+      alert("Missions completed.");
+    }catch(e){
+      alert("Failed: "+e);
+    }
+  }
+
+  function adminToggleRollAnim(){
+    window.disableRollAnim = !!($('admToggleAnim') && $('admToggleAnim').checked);
+    try{ saveGame(); }catch(e){}
+  }
+
+  function adminPlayCutscene(){
+    const v = $("admCutsceneSel").value;
+    try{
+      if(v==="Layers") startLayersCutscene(()=>{});
+      else if(v==="Severance") startSeveranceCutscene(()=>{});
+      else if(v==="RunHide") startRunHideCutscene(()=>{});
+      else if(v==="Galaxy") spawnGalaxyExplosion("galaxy");
+      else if(v==="Universe") spawnGalaxyExplosion("universe");
+    }catch(e){
+      alert("Failed: "+e);
+    }
+  }
+
+  // Bind UI
+  window.addEventListener("load", ()=>{
+    if($("adminClose")) $("adminClose").onclick = closeAdmin;
+    if($("adminOverlay")) $("adminOverlay").addEventListener("click",(e)=>{ if(e.target.id==="adminOverlay") closeAdmin(); });
+    if($("adminLoginBtn")) $("adminLoginBtn").onclick = unlockAdmin;
+
+    if($("admGiveAura")) $("admGiveAura").onclick = adminGiveAura;
+    if($("admDoUnlock")) $("admDoUnlock").onclick = adminUnlockAura;
+    if($("admGiveCoins")) $("admGiveCoins").onclick = adminGiveCoins;
+    if($("admSetLuckPct")) $("admSetLuckPct").onclick = adminSetLuckPct;
+    if($("admSetNextRoll")) $("admSetNextRoll").onclick = adminSetNextRoll;
+    if($("admSetRolls")) $("admSetRolls").onclick = adminSetRolls;
+    if($("admSetDelay")) $("admSetDelay").onclick = adminSetDelay;
+    if($("admSetBiome")) $("admSetBiome").onclick = adminApplyBiome;
+    if($("admGivePotion")) $("admGivePotion").onclick = adminGivePotion;
+    if($("admCraftEffect")) $("admCraftEffect").onclick = adminInstantCraftEffect;
+    if($("admCompleteMissions")) $("admCompleteMissions").onclick = adminCompleteMissions;
+    if($("admPlayCutscene")) $("admPlayCutscene").onclick = adminPlayCutscene;
+  });
+
+  // Secret key combo: CTRL + B + M
+  const down = new Set();
+  window.addEventListener("keydown",(e)=>{
+    down.add(e.key.toLowerCase());
+    if(e.ctrlKey && down.has("b") && down.has("m")){
+      e.preventDefault();
+      openAdmin();
+    }
+  });
+  window.addEventListener("keyup",(e)=>{ down.delete(e.key.toLowerCase()); });
+
+})();
+</script>
+
 </body>
 </html>
-
-
