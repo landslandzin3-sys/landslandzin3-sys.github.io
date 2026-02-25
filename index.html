@@ -7302,11 +7302,21 @@ function closeCollection(){
         </div>
       </div>
 
+      
       <div class="logSection">
+        <h3>Command Guide</h3>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button id="admCmdGuideBtn" style="flex:1;border-radius:12px;border:1px solid #fff;background:none;color:#fff;cursor:pointer;padding:7px 10px;">Open Guide</button>
+          <button id="admCmdGuideClose" style="flex:1;border-radius:12px;border:1px solid rgba(255,255,255,0.9);background:none;color:#fff;cursor:pointer;padding:7px 10px;">Close</button>
+        </div>
+        <div id="admCmdGuideBox" style="display:none;margin-top:10px;border:1px solid var(--border);border-radius:12px;padding:10px;background:rgba(0,0,0,0.22);font-size:12px;color:#eaeaea;white-space:pre-wrap;max-height:260px;overflow:auto;"></div>
+      </div>
+
+<div class="logSection">
         <h3>Sandbox Console (Safe)</h3>
         <div style="font-size:12px;color:#cfcfcf;line-height:1.35;margin-bottom:8px;">
           Runs a <b>single expression</b> in a restricted sandbox (no DOM, no storage, no network, no timers).
-          Use it for math and quick checks. Example: <code>(coins + 5000) * 2</code>
+          Use it for math and admin-safe commands. Example: <code>(coins + 5000) * 2</code> • <code>giveAura(&quot;Serafim&quot;, 1)</code> • <code>givePotion(&quot;Lucky Potion&quot;, 25)</code>
         </div>
         <textarea id="admSandboxCode" placeholder="Type an expression..."
           style="width:100%;min-height:110px;resize:vertical;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,0.25);background:rgba(0,0,0,0.45);color:#fff;outline:none;font-size:12px;line-height:1.35;"></textarea>
@@ -7498,12 +7508,222 @@ function closeCollection(){
 
         return "Gave " + added + "x " + found.name + " to " + (dest==="rolling"?"rolling":"storage") + ".";
       }
+      ,
+      giveAllAuras: (qty=1, dest="storage")=>{
+        qty = Math.max(1, Math.floor(Number(qty)||1));
+        const baseAuras = (typeof aurasData !== "undefined" ? aurasData : (window.aurasData||[]));
+        const extra1    = (typeof newAurasData !== "undefined" ? newAurasData : (window.newAurasData||[]));
+        const extra2    = (typeof mutationAurasData !== "undefined" ? mutationAurasData : (window.mutationAurasData||[]));
+        const extra3    = (typeof anomalyAurasData !== "undefined" ? anomalyAurasData : (window.anomalyAurasData||[]));
+        const extra4    = (typeof AURAS !== "undefined" ? AURAS : (window.AURAS||[]));
+
+        // unique by name
+        const allRaw = [].concat(baseAuras||[], extra1||[], extra2||[], extra3||[], extra4||[]);
+        const seen = new Set();
+        const all = [];
+        for(const a of allRaw){
+          const nm = String(a?.name||"").trim();
+          const key = nm.toLowerCase();
+          if(!nm || seen.has(key)) continue;
+          seen.add(key);
+          all.push(a);
+        }
+
+        const st    = (typeof storage !== "undefined" ? storage : (window.storage||[]));
+        const rl    = (typeof rolling !== "undefined" ? rolling : (window.rolling||[]));
+        const limit = (typeof storageLimit !== "undefined" ? storageLimit : (window.storageLimit||999999));
+
+        let total = 0;
+        for(const a of all){
+          for(let i=0;i<qty;i++){
+            const item = JSON.parse(JSON.stringify(a));
+            if(dest === "rolling"){
+              rl.push(item);
+            }else{
+              if(st.length >= limit) rl.push(item); else st.push(item);
+            }
+            total++;
+          }
+          try{
+            if(typeof unlockAuraInCollection === "function") unlockAuraInCollection(a.name);
+            else if(typeof window.unlockAuraInCollection === "function") window.unlockAuraInCollection(a.name);
+          }catch(e){}
+        }
+
+        try{ if(typeof refreshRolling==="function") refreshRolling(); else if(typeof window.refreshRolling==="function") window.refreshRolling(); }catch(e){}
+        try{ if(typeof refreshStorage==="function") refreshStorage(); else if(typeof window.refreshStorage==="function") window.refreshStorage(); }catch(e){}
+        try{ if(typeof renderRollingAuras==="function") renderRollingAuras(); else if(typeof window.renderRollingAuras==="function") window.renderRollingAuras(); }catch(e){}
+        try{ if(typeof saveGame==="function") saveGame(); else if(typeof window.saveGame==="function") window.saveGame(); }catch(e){}
+
+        return "Gave " + qty + "x of ALL auras (" + all.length + " types), total items: " + total + ".";
+      },
+      craftAnyEffect: (effectName, equip=false)=>{
+        const n = String(effectName||"").trim();
+        if(!n) return "No effect name.";
+        const key = n;
+
+        const craftedObj = (typeof crafted !== "undefined" ? crafted : (window.crafted||{}));
+        const progObj    = (typeof craftProgress !== "undefined" ? craftProgress : (window.craftProgress||{}));
+
+        // Ensure it's a known effect (best-effort)
+        const needsMap = (typeof getEffectNeeds === "function" ? getEffectNeeds() : (typeof window.getEffectNeeds==="function" ? window.getEffectNeeds() : null));
+        if(needsMap && !needsMap[key]){
+          // try case-insensitive match
+          const k2 = Object.keys(needsMap).find(k=>k.toLowerCase()===key.toLowerCase());
+          if(!k2) return "Effect not found: " + key;
+          effectName = k2;
+        }
+
+        const finalName = String(effectName||key);
+        craftedObj[finalName] = true;
+        progObj[finalName] = progObj[finalName] || {};
+
+        try{ if(typeof renderEffects==="function") renderEffects(); else if(typeof window.renderEffects==="function") window.renderEffects(); }catch(e){}
+        try{ if(equip){ if(typeof equipEffect==="function") equipEffect(finalName); else if(typeof window.equipEffect==="function") window.equipEffect(finalName); } }catch(e){}
+        try{ if(typeof saveGame==="function") saveGame(); else if(typeof window.saveGame==="function") window.saveGame(); }catch(e){}
+
+        return "Crafted effect: " + finalName + (equip ? " (equipped)" : "") + ".";
+      },
+      givePotion: (potionIdOrName, qty=1)=>{
+        const q = String(potionIdOrName||"").trim();
+        if(!q) return "No potion id/name.";
+        qty = Math.max(1, Math.floor(Number(qty)||1));
+
+        const pots = (typeof POTIONS !== "undefined" ? POTIONS : (window.POTIONS||[]));
+        const found = pots.find(p=>String(p.id||"").toLowerCase()===q.toLowerCase())
+          || pots.find(p=>String(p.name||"").toLowerCase()===q.toLowerCase());
+        if(!found) return "Potion not found: " + q;
+
+        const inv = (typeof potionInventory !== "undefined" ? potionInventory : (window.potionInventory||{}));
+        inv[found.id] = (inv[found.id]||0) + qty;
+
+        // Ensure progress shape exists
+        try{
+          const prog = (typeof potionProgress !== "undefined" ? potionProgress : (window.potionProgress||{}));
+          prog[found.id] = prog[found.id] || {};
+        }catch(e){}
+
+        try{ if(typeof renderPotions==="function") renderPotions(); else if(typeof window.renderPotions==="function") window.renderPotions(); }catch(e){}
+        try{ if(typeof saveGame==="function") saveGame(); else if(typeof window.saveGame==="function") window.saveGame(); }catch(e){}
+
+        return "Gave potion: " + found.name + " x" + qty + ".";
+      }
+      ,
+      // ===== Extra Admin Commands (Sandbox-safe) =====
+      hasAura: (name)=>{
+        const n = String(name||"").trim().toLowerCase();
+        if(!n) return false;
+        const baseAuras = (typeof aurasData !== "undefined" ? aurasData : (window.aurasData||[]));
+        const extra1    = (typeof newAurasData !== "undefined" ? newAurasData : (window.newAurasData||[]));
+        const extra2    = (typeof mutationAurasData !== "undefined" ? mutationAurasData : (window.mutationAurasData||[]));
+        const extra3    = (typeof anomalyAurasData !== "undefined" ? anomalyAurasData : (window.anomalyAurasData||[]));
+        const extra4    = (typeof AURAS !== "undefined" ? AURAS : (window.AURAS||[]));
+        const all = [].concat(baseAuras||[], extra1||[], extra2||[], extra3||[], extra4||[]);
+        return !!all.find(a=>String(a?.name||"").trim().toLowerCase()===n);
+      },
+      searchAuras: (q, limit=30)=>{
+        const s = String(q||"").trim().toLowerCase();
+        if(!s) return [];
+        limit = Math.max(1, Math.floor(Number(limit)||30));
+        const baseAuras = (typeof aurasData !== "undefined" ? aurasData : (window.aurasData||[]));
+        const extra1    = (typeof newAurasData !== "undefined" ? newAurasData : (window.newAurasData||[]));
+        const extra2    = (typeof mutationAurasData !== "undefined" ? mutationAurasData : (window.mutationAurasData||[]));
+        const extra3    = (typeof anomalyAurasData !== "undefined" ? anomalyAurasData : (window.anomalyAurasData||[]));
+        const extra4    = (typeof AURAS !== "undefined" ? AURAS : (window.AURAS||[]));
+        const all = [].concat(baseAuras||[], extra1||[], extra2||[], extra3||[], extra4||[]);
+        const out = [];
+        for(const a of all){
+          const n = String(a?.name||"");
+          if(n.toLowerCase().includes(s)) out.push(n);
+          if(out.length >= limit) break;
+        }
+        return out;
+      },
+      listPotions: ()=>{
+        const pots = (typeof POTIONS !== "undefined" ? POTIONS : (window.POTIONS||[]));
+        return (pots||[]).map(p=>({id:p.id,name:p.name}));
+      },
+      listEffects: ()=>{
+        const needsMap = (typeof getEffectNeeds === "function" ? getEffectNeeds() : (typeof window.getEffectNeeds==="function" ? window.getEffectNeeds() : null));
+        if(needsMap) return Object.keys(needsMap);
+        const ef = (typeof effectsData !== "undefined" ? effectsData : (window.effectsData||null));
+        if(Array.isArray(ef)) return ef.map(x=>x.name||x.id).filter(Boolean);
+        return [];
+      },
+
+      // Coins / Luck / Rolls
+      setCoins: (v)=>{ const n=Number(v)||0; if(typeof coins!=="undefined") coins=n; else window.coins=n; try{ if(typeof updateUI==="function") updateUI(); }catch(e){} try{ if(typeof saveGame==="function") saveGame(); else if(typeof window.saveGame==="function") window.saveGame(); }catch(e){} return "Coins set: "+n; },
+      addCoins: (v)=>{ const n=Number(v)||0; if(typeof coins!=="undefined") coins+=n; else window.coins=(Number(window.coins||0)+n); try{ if(typeof updateUI==="function") updateUI(); }catch(e){} try{ if(typeof saveGame==="function") saveGame(); else if(typeof window.saveGame==="function") window.saveGame(); }catch(e){} return "Coins +"+n; },
+      setLuck: (v)=>{ const n=Number(v)||0; if(typeof luck!=="undefined") luck=n; else window.luck=n; try{ if(typeof updateUI==="function") updateUI(); }catch(e){} try{ if(typeof saveGame==="function") saveGame(); else if(typeof window.saveGame==="function") window.saveGame(); }catch(e){} return "Luck set: "+n; },
+      multLuck: (v)=>{ const n=Number(v)||1; if(typeof luck!=="undefined") luck*=n; else window.luck=(Number(window.luck||0)*n); try{ if(typeof updateUI==="function") updateUI(); }catch(e){} try{ if(typeof saveGame==="function") saveGame(); else if(typeof window.saveGame==="function") window.saveGame(); }catch(e){} return "Luck x"+n; },
+      setRolls: (v)=>{ const n=Math.max(0, Math.floor(Number(v)||0)); if(typeof rolls!=="undefined") rolls=n; else window.rolls=n; try{ if(typeof updateUI==="function") updateUI(); }catch(e){} try{ if(typeof saveGame==="function") saveGame(); else if(typeof window.saveGame==="function") window.saveGame(); }catch(e){} return "Rolls set: "+n; },
+      addRolls: (v)=>{ const n=Math.max(0, Math.floor(Number(v)||0)); if(typeof rolls!=="undefined") rolls+=n; else window.rolls=(Math.floor(Number(window.rolls||0))+n); try{ if(typeof updateUI==="function") updateUI(); }catch(e){} try{ if(typeof saveGame==="function") saveGame(); else if(typeof window.saveGame==="function") window.saveGame(); }catch(e){} return "Rolls +"+n; },
+
+      // Rolling speed / biome
+      setRollSpeedMs: (ms)=>{ const n=Math.max(0, Math.floor(Number(ms)||0)); window.adminRollDelayMsOverride=n; return "Roll delay override: "+n+"ms"; },
+      clearRollSpeedOverride: ()=>{ window.adminRollDelayMsOverride=null; return "Roll delay override cleared."; },
+      setBiome: (name)=>{ const b=String(name||"").trim(); if(!b) return "No biome."; if(typeof setBiome==="function") setBiome(b); else window.currentBiome=b; try{ if(typeof updateBiomeUI==="function") updateBiomeUI(); }catch(e){} try{ if(typeof saveGame==="function") saveGame(); else if(typeof window.saveGame==="function") window.saveGame(); }catch(e){} return "Biome set: "+b; },
+      setBiomeDuration: (sec)=>{ const n=Math.max(0, Math.floor(Number(sec)||0)); if(typeof biomeTimeLeft!=="undefined") biomeTimeLeft=n; else window.biomeTimeLeft=n; try{ if(typeof updateBiomeUI==="function") updateBiomeUI(); }catch(e){} try{ if(typeof saveGame==="function") saveGame(); else if(typeof window.saveGame==="function") window.saveGame(); }catch(e){} return "Biome duration: "+n+"s"; },
+
+      // Next roll overrides
+      setNextRollMult: (m)=>{ const n=Number(m); if(!isFinite(n)) return "Invalid multiplier."; window.adminNextRollLuckMult=n; return "Next roll multiplier: "+n; },
+      clearNextRollMult: ()=>{ window.adminNextRollLuckMult=null; return "Next roll multiplier cleared."; },
+      forceNextAura: (name)=>{ const n=String(name||"").trim(); if(!n) return "No aura."; window.adminForceNextAuraName=n; return "Next aura forced: "+n; },
+      clearForceAura: ()=>{ window.adminForceNextAuraName=null; return "Force-aura cleared."; },
+
+      // Effects
+      equipEffectByName: (name)=>{ const n=String(name||"").trim(); if(!n) return "No effect."; try{ if(typeof equipEffect==="function") equipEffect(n); else if(typeof window.equipEffect==="function") window.equipEffect(n); }catch(e){ return "Equip failed."; } try{ if(typeof saveGame==="function") saveGame(); else if(typeof window.saveGame==="function") window.saveGame(); }catch(e){} return "Equipped: "+n; },
+      unequipEffectAll: ()=>{ try{ if(typeof unequipAllEffects==="function") unequipAllEffects(); else if(typeof window.unequipAllEffects==="function") window.unequipAllEffects(); else if(typeof equippedEffects!=="undefined") equippedEffects.length=0; else if(window.equippedEffects) window.equippedEffects=[]; }catch(e){} try{ if(typeof renderEffects==="function") renderEffects(); else if(typeof window.renderEffects==="function") window.renderEffects(); }catch(e){} try{ if(typeof saveGame==="function") saveGame(); else if(typeof window.saveGame==="function") window.saveGame(); }catch(e){} return "Unequipped all effects."; },
+
+      // Potions
+      clearPotions: ()=>{ try{ const inv=(typeof potionInventory!=="undefined"?potionInventory:(window.potionInventory||{})); for(const k in inv) delete inv[k]; }catch(e){} try{ if(typeof renderPotions==="function") renderPotions(); else if(typeof window.renderPotions==="function") window.renderPotions(); }catch(e){} try{ if(typeof saveGame==="function") saveGame(); else if(typeof window.saveGame==="function") window.saveGame(); }catch(e){} return "Potion inventory cleared."; },
+
+      // Inventory helpers
+      setStorageLimit: (v)=>{ const n=Math.max(1, Math.floor(Number(v)||1)); if(typeof storageLimit!=="undefined") storageLimit=n; else window.storageLimit=n; try{ if(typeof refreshStorage==="function") refreshStorage(); else if(typeof window.refreshStorage==="function") window.refreshStorage(); }catch(e){} try{ if(typeof saveGame==="function") saveGame(); else if(typeof window.saveGame==="function") window.saveGame(); }catch(e){} return "Storage limit: "+n; },
+      clearStorage: ()=>{ try{ const st=(typeof storage!=="undefined"?storage:(window.storage||[])); st.length=0; }catch(e){} try{ if(typeof refreshStorage==="function") refreshStorage(); else if(typeof window.refreshStorage==="function") window.refreshStorage(); }catch(e){} try{ if(typeof saveGame==="function") saveGame(); else if(typeof window.saveGame==="function") window.saveGame(); }catch(e){} return "Storage cleared."; },
+      clearRolling: ()=>{ try{ const rl=(typeof rolling!=="undefined"?rolling:(window.rolling||[])); rl.length=0; }catch(e){} try{ if(typeof renderRollingAuras==="function") renderRollingAuras(); else if(typeof window.renderRollingAuras==="function") window.renderRollingAuras(); }catch(e){} try{ if(typeof saveGame==="function") saveGame(); else if(typeof window.saveGame==="function") window.saveGame(); }catch(e){} return "Rolling cleared."; },
+
+      // Collection flags
+      unlockCollectionAura: (name)=>{ const n=String(name||"").trim(); if(!n) return "No aura."; try{ if(typeof unlockAuraInCollection==="function") unlockAuraInCollection(n); else if(typeof window.unlockAuraInCollection==="function") window.unlockAuraInCollection(n); }catch(e){ return "Unlock failed."; } return "Unlocked in collection: "+n; },
+      clearCollection: ()=>{ try{ if(typeof collectionUnlocked!=="undefined") collectionUnlocked.clear?.(); else if(window.collectionUnlocked) window.collectionUnlocked.clear?.(); localStorage.removeItem("collectionUnlocked"); }catch(e){} try{ if(typeof renderCollection==="function") renderCollection(); else if(typeof window.renderCollection==="function") window.renderCollection(); }catch(e){} return "Collection cleared (visual)."; },
+
+      // Missions / Ranking (best-effort)
+      completeAllMissions: ()=>{ try{ if(typeof completeAllMissions==="function") completeAllMissions(); else if(typeof window.completeAllMissions==="function") window.completeAllMissions(); }catch(e){ return "Missions function not found."; } try{ if(typeof saveGame==="function") saveGame(); else if(typeof window.saveGame==="function") window.saveGame(); }catch(e){} return "All missions completed."; },
+
+      // Config toggles (same keys as user settings)
+      setCfg: (key, val)=>{
+        const k=String(key||"").trim();
+        const v=!!val;
+        try{
+          const cfg = JSON.parse(localStorage.getItem("anrng_user_cfg_v1") || "{}");
+          cfg[k]=v;
+          localStorage.setItem("anrng_user_cfg_v1", JSON.stringify(cfg));
+          return "Cfg "+k+" = "+v;
+        }catch(e){ return "Cfg set failed."; }
+      },
+
+      // Reset SAVE (reset your data)
+      resetMyData: (keepConfigs=true)=>{
+        try{
+          const k = (typeof SAVE_KEY!=="undefined" ? SAVE_KEY : (window.SAVE_KEY||null));
+          if(k) localStorage.removeItem(k);
+          // These are safe to wipe too
+          localStorage.removeItem("collectionUnlocked");
+          localStorage.removeItem("visits");
+          if(!keepConfigs) localStorage.removeItem("anrng_user_cfg_v1");
+          localStorage.removeItem("playerName");
+        }catch(e){}
+        try{ location.reload(); }catch(e){}
+        return "Reset triggered.";
+      }
+
+
     });
 
 
     try{
       // Strict mode + destructuring from frozen ctx; expression-only
-      const fn = Function("ctx", `"use strict"; const {coins,rolls,luck,biome,rand,clamp,round,Math,giveAura} = ctx; return (${srcRaw});`);
+      const fn = Function("ctx", `"use strict"; const {coins,rolls,luck,biome,rand,clamp,round,Math,giveAura,giveAllAuras,craftAnyEffect,givePotion,hasAura,searchAuras,listPotions,listEffects,setCoins,addCoins,setLuck,multLuck,setRolls,addRolls,setRollSpeedMs,clearRollSpeedOverride,setBiome,setBiomeDuration,setNextRollMult,clearNextRollMult,forceNextAura,clearForceAura,equipEffectByName,unequipEffectAll,clearPotions,setStorageLimit,clearStorage,clearRolling,unlockCollectionAura,clearCollection,completeAllMissions,setCfg,resetMyData} = ctx; return (${srcRaw});`);
       const res = fn(ctx);
       adminSandboxSetOut(String(res));
     }catch(e){
@@ -7514,6 +7734,73 @@ function closeCollection(){
   function adminSandboxClear(){
     if($("admSandboxCode")) $("admSandboxCode").value = "";
     adminSandboxSetOut("");
+  }
+
+  
+  function adminBuildCommandGuide(){
+    const lines = [
+      "Sandbox Commands (Admin-safe):",
+      "",
+      "Aura / Collection:",
+      "  giveAura(name, qty=1, dest='storage')",
+      "  giveAllAuras(qty=1, dest='storage')",
+      "  hasAura(name)",
+      "  searchAuras(query, limit=30)",
+      "  unlockCollectionAura(name)",
+      "  clearCollection()",
+      "",
+      "Effects:",
+      "  craftAnyEffect(effectName, equip=false)",
+      "  equipEffectByName(effectName)",
+      "  unequipEffectAll()",
+      "  listEffects()",
+      "",
+      "Potions:",
+      "  givePotion(idOrName, qty=1)",
+      "  clearPotions()",
+      "  listPotions()",
+      "",
+      "Player / Economy:",
+      "  setCoins(n) / addCoins(n)",
+      "  setLuck(n) / multLuck(x)",
+      "  setRolls(n) / addRolls(n)",
+      "  setStorageLimit(n)",
+      "  clearStorage() / clearRolling()",
+      "",
+      "Biome / Rolling:",
+      "  setBiome(name)",
+      "  setBiomeDuration(seconds)",
+      "  setRollSpeedMs(ms)",
+      "  clearRollSpeedOverride()",
+      "",
+      "Next Roll Overrides:",
+      "  setNextRollMult(m)",
+      "  clearNextRollMult()",
+      "  forceNextAura(name)",
+      "  clearForceAura()",
+      "",
+      "Missions:",
+      "  completeAllMissions()   (if the game has this helper)",
+      "",
+      "Configs:",
+      "  setCfg(key, true/false)   (keys: cutscenes, biomeFX, welcomeBack)",
+      "",
+      "Reset:",
+      "  resetMyData(keepConfigs=true)   // resets your save data and reloads"
+    ];
+    return lines.join("\n");
+  }
+
+  function adminOpenGuide(){
+    const box = $("admCmdGuideBox");
+    if(!box) return;
+    box.style.display = "block";
+    box.textContent = adminBuildCommandGuide();
+  }
+  function adminCloseGuide(){
+    const box = $("admCmdGuideBox");
+    if(!box) return;
+    box.style.display = "none";
   }
 
   function openAdmin(){
@@ -7768,6 +8055,8 @@ function closeCollection(){
     if($("admPlayCutscene")) $("admPlayCutscene").onclick = adminPlayCutscene;
     if($("admSandboxRun")) $("admSandboxRun").onclick = adminSandboxRun;
     if($("admSandboxClear")) $("admSandboxClear").onclick = adminSandboxClear;
+    if($("admCmdGuideBtn")) $("admCmdGuideBtn").onclick = adminOpenGuide;
+    if($("admCmdGuideClose")) $("admCmdGuideClose").onclick = adminCloseGuide;
     if($("admForceAuraBtn")) $("admForceAuraBtn").onclick = adminForceNextAura;
     if($("admClearOverrides")) $("admClearOverrides").onclick = adminClearOverrides;
     if($("admSaveToggles")) $("admSaveToggles").onclick = adminSaveToggles;
