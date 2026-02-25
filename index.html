@@ -2868,8 +2868,7 @@ body{
     <li>Bugfix: fixed JS execution blockers (TDZ / invalid tokens) and improved save compatibility.</li>
   
     <li><b>Effects:</b> Added rarity tiers for the new effects (Mythic → Transcendent → Sovereign → Anomaly-tier).</li>
-    <li><b>Admin Panel:</b> Secret CTRL + B + M panel with password access (debug/cheat controls).</li>
-    <li><b>Configs added:</b> player can toggle cutscenes, biome FX, and the welcome back message</li>
+<li><b>Configs added:</b> player can toggle cutscenes, biome FX, and the welcome back message</li>
     <li>Inventory now shows aura <b>rarity</b> and aura <b>effect</b> (visual/status).</li>
     <li>Added <b>Reset Game</b> button under Collection (asks confirmation, deletes save).</li>
   </ul>
@@ -5652,7 +5651,7 @@ function getTotalLuckMultiplier(extraMultiplier=1){
   if(hunterPotionActive) pct += 350;
 
   pct += getHiddenLuckPercent();
-  // Admin Panel override
+  // 
   pct += (window.adminLuckPct || 0);
 
 
@@ -5662,10 +5661,22 @@ function getTotalLuckMultiplier(extraMultiplier=1){
 
 function pickWithLuckMultiplier(extraMultiplier=1){
   let mult = getTotalLuckMultiplier(extraMultiplier);
-  // Admin Panel: force next roll multiplier
+  // 
+  if(window.adminForceNextAuraName){
+    const targetName = String(window.adminForceNextAuraName).trim().toLowerCase();
+    window.adminForceNextAuraName = null;
+    try{
+      const all = [].concat(aurasData||[], newAurasData||[], mutationAurasData||[], anomalyAurasData||[]);
+      const found = all.find(a=>String(a.name||'').trim().toLowerCase()===targetName);
+      if(found) return found;
+    }catch(e){}
+  }
+
+  // 
   if(window.adminNextRollLuckMult != null){
     mult = Math.max(1, Number(window.adminNextRollLuckMult)||1);
     window.adminNextRollLuckMult = null;
+  window.adminForceNextAuraName = null;
   }
 
   // An RNG Site +: Anomaly Spark
@@ -5858,7 +5869,7 @@ if(fasterActive) m *= 0.50;
 
 function getRollingDelayMs(){
   let d = 500;
-  // Admin Panel: override rolling delay (ms)
+  // 
   if(window.adminRollDelayMsOverride != null){
     const v = Number(window.adminRollDelayMsOverride);
     if(Number.isFinite(v) && v >= 0) return Math.round(v);
@@ -7159,7 +7170,7 @@ function closeCollection(){
 <div id="adminOverlay" class="overlay" aria-hidden="true">
   <button class="overlayClose" id="adminClose" title="Close" aria-label="Close">X</button>
   <div class="overlayPanel" id="adminPanel">
-    <h2>Admin Panel</h2>
+    <h2></h2>
     <div id="adminAuth">
       <div style="font-size:12px;color:#cfcfcf;line-height:1.35;margin-bottom:10px;">
         Enter password to access.
@@ -7291,22 +7302,219 @@ function closeCollection(){
         </div>
       </div>
 
+      <div class="logSection">
+        <h3>Sandbox Console (Safe)</h3>
+        <div style="font-size:12px;color:#cfcfcf;line-height:1.35;margin-bottom:8px;">
+          Runs a <b>single expression</b> in a restricted sandbox (no DOM, no storage, no network, no timers).
+          Use it for math and quick checks. Example: <code>(coins + 5000) * 2</code>
+        </div>
+        <textarea id="admSandboxCode" placeholder="Type an expression..."
+          style="width:100%;min-height:110px;resize:vertical;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,0.25);background:rgba(0,0,0,0.45);color:#fff;outline:none;font-size:12px;line-height:1.35;"></textarea>
+        <div style="display:flex;gap:8px;margin-top:8px;">
+          <button id="admSandboxRun" style="flex:1;border-radius:12px;border:1px solid #fff;background:none;color:#fff;cursor:pointer;padding:7px 10px;">Run</button>
+          <button id="admSandboxClear" style="flex:1;border-radius:12px;border:1px solid rgba(255,255,255,0.9);background:none;color:#fff;cursor:pointer;padding:7px 10px;">Clear</button>
+        </div>
+        <div id="admSandboxOut" style="margin-top:10px;border:1px solid var(--border);border-radius:12px;padding:10px;background:rgba(0,0,0,0.22);font-size:12px;color:#eaeaea;white-space:pre-wrap;"></div>
+      </div>
+
+
+
     </div>
   </div>
 </div>
 
 
 <script>
-// ===== Admin Panel (Secret) =====
+// ===== 
 (function(){
   const PASS = "239935483239935483";
   const ADMIN_UNLOCK_KEY = "anrng_admin_unlocked_v1";
   window.adminLuckPct = window.adminLuckPct || 0;
   window.adminNextRollLuckMult = null;
+  window.adminForceNextAuraName = null;
   window.adminRollDelayMsOverride = null;
   window.disableRollAnim = !!window.disableRollAnim;
 
   function $(id){ return document.getElementById(id); }
+
+  
+  function adminForceNextAura(){
+    const v = ($("admForceAuraName")?.value || "").trim();
+    if(!v){ return toast?.("Type an aura name."); }
+    window.adminForceNextAuraName = v;
+    toast?.("Next roll forced: " + v);
+  }
+
+  function adminClearOverrides(){
+    window.adminLuckPct = 0;
+    window.adminNextRollLuckMult = null;
+    window.adminForceNextAuraName = null;
+    window.adminRollDelayMsOverride = null;
+    toast?.("Admin overrides cleared.");
+    // also clear input boxes (safe)
+    if($("admLuckPct")) $("admLuckPct").value = "";
+    if($("admNextRollMult")) $("admNextRollMult").value = "";
+    if($("admForceAuraName")) $("admForceAuraName").value = "";
+  }
+
+  function adminLoadToggles(){
+    try{
+      const cfg = JSON.parse(localStorage.getItem("anrng_user_cfg_v1") || "{}");
+      if($("admToggleCutscenes")) $("admToggleCutscenes").checked = !!cfg.cutscenes;
+      if($("admToggleBiomeFX")) $("admToggleBiomeFX").checked = !!cfg.biomeFX;
+      if($("admToggleWelcome")) $("admToggleWelcome").checked = !!cfg.welcomeBack;
+    }catch(e){}
+  }
+
+  function adminSaveToggles(){
+    const cfg = {
+      cutscenes: !!$("admToggleCutscenes")?.checked,
+      biomeFX: !!$("admToggleBiomeFX")?.checked,
+      welcomeBack: !!$("admToggleWelcome")?.checked
+    };
+    try{ localStorage.setItem("anrng_user_cfg_v1", JSON.stringify(cfg)); }catch(e){}
+    // Apply immediately (best-effort)
+    try{
+      window.disableRollAnim = !cfg.cutscenes;
+      const app = document.getElementById("app");
+      if(app){
+        if(cfg.biomeFX) app.classList.add("biomeOn"); else app.classList.remove("biomeOn");
+      }
+    }catch(e){}
+    toast?.("Configs saved.");
+  }
+
+  
+  function adminSandboxSetOut(msg){
+    const out = $("admSandboxOut");
+    if(out) out.textContent = String(msg ?? "");
+  }
+
+  function adminSandboxRun(){
+    const srcRaw = ($("admSandboxCode")?.value || "").trim();
+    if(!srcRaw){ adminSandboxSetOut("No code."); return; }
+
+    // Hard deny list (best-effort). This is a SAFE sandbox, not a full JS VM.
+    const deny = [
+      "window","document","localStorage","sessionStorage","indexedDB",
+      "fetch","xmlhttprequest","websocket","navigator","location","history",
+      "settimeout","setinterval","requestanimationframe","postmessage",
+      "function","eval","import","export","worker","sharedworker","serviceworker",
+      "this","prototype","constructor","__proto__","new ","class ","=>","while","for","do","try","catch","throw"
+    ];
+    const low = srcRaw.toLowerCase();
+
+    // Single-expression guard: reject semicolons or braces
+    if(/[;{}]/.test(srcRaw)){
+      adminSandboxSetOut("Blocked: only a single expression is allowed (no ; or { }).");
+      return;
+    }
+    for(const k of deny){
+      if(low.includes(k)){
+        adminSandboxSetOut("Blocked token: " + k);
+        return;
+      }
+    }
+    // Also block backticks (template strings) to avoid sneaky constructors
+    if(srcRaw.includes("`")){
+      adminSandboxSetOut("Blocked: template strings not allowed.");
+      return;
+    }
+
+    // Provide a tiny, safe context
+    const ctx = Object.freeze({
+      coins: Number(window.coins ?? 0),
+      rolls: Number(window.rolls ?? 0),
+      luck: Number(window.luck ?? 1),
+      biome: String(window.currentBiome ?? window.biome ?? ""),
+      rand: (min=0,max=1)=> (Math.random()*(max-min))+min,
+      clamp: (v,a,b)=> Math.max(a, Math.min(b, v)),
+      round: (v,n=0)=> {
+        const p = Math.pow(10, n);
+        return Math.round(v*p)/p;
+      },
+      // Expose Math safely
+      Math: Math,
+      giveAura: (name, qty=1, dest="storage")=>{
+        const n = String(name||"").trim();
+        if(!n) return "No aura name.";
+        qty = Math.max(1, Math.floor(Number(qty)||1));
+
+        // Prefer in-scope globals (const/let) if they exist; fall back to window.*
+        const baseAuras = (typeof aurasData !== "undefined" ? aurasData : (window.aurasData||[]));
+        const extra1    = (typeof newAurasData !== "undefined" ? newAurasData : (window.newAurasData||[]));
+        const extra2    = (typeof mutationAurasData !== "undefined" ? mutationAurasData : (window.mutationAurasData||[]));
+        const extra3    = (typeof anomalyAurasData !== "undefined" ? anomalyAurasData : (window.anomalyAurasData||[]));
+        const extra4    = (typeof AURAS !== "undefined" ? AURAS : (window.AURAS||[]));
+
+        const all = [].concat(baseAuras||[], extra1||[], extra2||[], extra3||[], extra4||[]);
+
+        const found = all.find(a=>String(a?.name||"").trim().toLowerCase()===n.toLowerCase());
+        if(!found) return "Aura not found: " + n;
+
+        const st    = (typeof storage !== "undefined" ? storage : (window.storage||[]));
+        const rl    = (typeof rolling !== "undefined" ? rolling : (window.rolling||[]));
+        const limit = (typeof storageLimit !== "undefined" ? storageLimit : (window.storageLimit||999999));
+
+        let added = 0;
+        for(let i=0;i<qty;i++){
+          const item = JSON.parse(JSON.stringify(found)); // clone
+          if(dest === "rolling"){
+            rl.push(item);
+            added++;
+          } else {
+            if(st.length >= limit){
+              rl.push(item);
+              added++;
+            } else {
+              st.push(item);
+              added++;
+            }
+          }
+          // mark in collection (best-effort)
+          try{
+            if(typeof unlockAuraInCollection === "function") unlockAuraInCollection(found.name);
+            else if(typeof window.unlockAuraInCollection === "function") window.unlockAuraInCollection(found.name);
+          }catch(e){}
+        }
+
+        // refresh UI (best-effort)
+        try{
+          if(typeof refreshRolling === "function") refreshRolling();
+          else if(typeof window.refreshRolling === "function") window.refreshRolling();
+        }catch(e){}
+        try{
+          if(typeof refreshStorage === "function") refreshStorage();
+          else if(typeof window.refreshStorage === "function") window.refreshStorage();
+        }catch(e){}
+        try{
+          if(typeof renderRollingAuras === "function") renderRollingAuras();
+          else if(typeof window.renderRollingAuras === "function") window.renderRollingAuras();
+        }catch(e){}
+        try{
+          if(typeof saveGame === "function") saveGame();
+          else if(typeof window.saveGame === "function") window.saveGame();
+        }catch(e){}
+
+        return "Gave " + added + "x " + found.name + " to " + (dest==="rolling"?"rolling":"storage") + ".";
+      }
+    });
+
+
+    try{
+      // Strict mode + destructuring from frozen ctx; expression-only
+      const fn = Function("ctx", `"use strict"; const {coins,rolls,luck,biome,rand,clamp,round,Math,giveAura} = ctx; return (${srcRaw});`);
+      const res = fn(ctx);
+      adminSandboxSetOut(String(res));
+    }catch(e){
+      adminSandboxSetOut("Error: " + (e?.message || e));
+    }
+  }
+
+  function adminSandboxClear(){
+    if($("admSandboxCode")) $("admSandboxCode").value = "";
+    adminSandboxSetOut("");
+  }
 
   function openAdmin(){
     const o = $("adminOverlay");
@@ -7319,10 +7527,12 @@ function closeCollection(){
       $("adminAuth").style.display = "none";
       $("adminBody").style.display = "block";
       $("adminAuthMsg").textContent = "";
+      adminLoadToggles();
     }else{
       $("adminAuth").style.display = "block";
       $("adminBody").style.display = "none";
       $("adminAuthMsg").textContent = "";
+      adminLoadToggles();
       $("adminPass").value = "";
       setTimeout(()=>{$("adminPass").focus();}, 50);
     }
@@ -7369,6 +7579,7 @@ function closeCollection(){
     $("adminAuth").style.display = "none";
     $("adminBody").style.display = "block";
     $("adminAuthMsg").textContent = "";
+      adminLoadToggles();
     sfx && sfx("open");
   }
 
@@ -7555,6 +7766,12 @@ function closeCollection(){
     if($("admCraftEffect")) $("admCraftEffect").onclick = adminInstantCraftEffect;
     if($("admCompleteMissions")) $("admCompleteMissions").onclick = adminCompleteMissions;
     if($("admPlayCutscene")) $("admPlayCutscene").onclick = adminPlayCutscene;
+    if($("admSandboxRun")) $("admSandboxRun").onclick = adminSandboxRun;
+    if($("admSandboxClear")) $("admSandboxClear").onclick = adminSandboxClear;
+    if($("admForceAuraBtn")) $("admForceAuraBtn").onclick = adminForceNextAura;
+    if($("admClearOverrides")) $("admClearOverrides").onclick = adminClearOverrides;
+    if($("admSaveToggles")) $("admSaveToggles").onclick = adminSaveToggles;
+
   });
 
   // Secret key combo: CTRL + B + M
